@@ -1,10 +1,15 @@
 package com.github.droibit.rxruntimepermissions;
 
+import com.github.droibit.rxruntimepermissions.PermissionsResult.Permission;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
+import android.support.v4.content.PermissionChecker;
+
+import java.lang.reflect.Array;
 import java.util.Arrays;
 import java.util.List;
 
@@ -14,8 +19,10 @@ import rx.subjects.PublishSubject;
 
 import static android.content.pm.PackageManager.PERMISSION_DENIED;
 import static android.content.pm.PackageManager.PERMISSION_GRANTED;
+import static java.util.Arrays.asList;
 import static java.util.Collections.singletonList;
 
+@SuppressWarnings("ArraysAsListWithZeroOrOneArgument")
 public class RxRuntimePermissionsTest {
 
     private static final int REQUEST_CODE_1 = 1;
@@ -40,7 +47,7 @@ public class RxRuntimePermissionsTest {
         {
             final RxRuntimePermissions rxRuntimePermissions = new RxRuntimePermissions();
 
-            final TestSubscriber<List<PermissionResult>> testSubscriber = TestSubscriber.create();
+            final TestSubscriber<PermissionsResult> testSubscriber = TestSubscriber.create();
             rxRuntimePermissions.requestPermissions(requestPermissions, null, REQUEST_CODE_1, SINGLE_PERMISSION)
                     .subscribe(testSubscriber);
 
@@ -54,17 +61,17 @@ public class RxRuntimePermissionsTest {
             testSubscriber.assertCompleted();
             testSubscriber.assertUnsubscribed();
 
-            final List<PermissionResult> permissionsResult = singletonList(
-                    new PermissionResult(REQUEST_CODE_1, SINGLE_PERMISSION[0], PERMISSION_GRANTED)
+            final List<Permission> permissions = asList(
+                    new Permission(SINGLE_PERMISSION[0], PERMISSION_GRANTED)
             );
-            testSubscriber.assertValue(permissionsResult);
+            testSubscriber.assertValue(new PermissionsResult(REQUEST_CODE_1, permissions));
         }
 
         // multiple permissions
         {
             final RxRuntimePermissions rxRuntimePermissions = new RxRuntimePermissions();
 
-            final TestSubscriber<List<PermissionResult>> testSubscriber = TestSubscriber.create();
+            final TestSubscriber<PermissionsResult> testSubscriber = TestSubscriber.create();
             rxRuntimePermissions.requestPermissions(requestPermissions, null, REQUEST_CODE_1, MULTIPLE_PERMISSIONS)
                     .subscribe(testSubscriber);
 
@@ -78,12 +85,12 @@ public class RxRuntimePermissionsTest {
             testSubscriber.assertCompleted();
             testSubscriber.assertUnsubscribed();
 
-            final List<PermissionResult> permissionsResult = Arrays.asList(
-                    new PermissionResult(REQUEST_CODE_1, MULTIPLE_PERMISSIONS[0], PERMISSION_GRANTED),
-                    new PermissionResult(REQUEST_CODE_1, MULTIPLE_PERMISSIONS[1], PERMISSION_DENIED),
-                    new PermissionResult(REQUEST_CODE_1, MULTIPLE_PERMISSIONS[2], PERMISSION_GRANTED)
+            final List<Permission> permissions = asList(
+                    new Permission(MULTIPLE_PERMISSIONS[0], PERMISSION_GRANTED),
+                    new Permission(MULTIPLE_PERMISSIONS[1], PERMISSION_DENIED),
+                    new Permission(MULTIPLE_PERMISSIONS[2], PERMISSION_GRANTED)
             );
-            testSubscriber.assertValue(permissionsResult);
+            testSubscriber.assertValue(new PermissionsResult(REQUEST_CODE_1, permissions));
         }
     }
 
@@ -94,7 +101,7 @@ public class RxRuntimePermissionsTest {
             final RxRuntimePermissions rxRuntimePermissions = new RxRuntimePermissions();
 
             final PublishSubject<Object> trigger = PublishSubject.create();
-            final TestSubscriber<List<PermissionResult>> testSubscriber = TestSubscriber.create();
+            final TestSubscriber<PermissionsResult> testSubscriber = TestSubscriber.create();
             rxRuntimePermissions.requestPermissions(requestPermissions, trigger, REQUEST_CODE_1, SINGLE_PERMISSION)
                     .subscribe(testSubscriber);
 
@@ -105,10 +112,10 @@ public class RxRuntimePermissionsTest {
                     new int[]{PERMISSION_GRANTED}
             );
 
-            final List<PermissionResult> permissionsResult = singletonList(
-                    new PermissionResult(REQUEST_CODE_1, SINGLE_PERMISSION[0], PERMISSION_GRANTED)
+            final List<Permission> permissions = asList(
+                    new Permission(SINGLE_PERMISSION[0], PERMISSION_GRANTED)
             );
-            testSubscriber.assertReceivedOnNext(singletonList(permissionsResult));
+            testSubscriber.assertReceivedOnNext(asList(new PermissionsResult(REQUEST_CODE_1, permissions)));
             testSubscriber.assertNoTerminalEvent();
         }
 
@@ -117,7 +124,7 @@ public class RxRuntimePermissionsTest {
             final RxRuntimePermissions rxRuntimePermissions = new RxRuntimePermissions();
 
             final PublishSubject<Object> trigger = PublishSubject.create();
-            final TestSubscriber<List<PermissionResult>> testSubscriber = TestSubscriber.create();
+            final TestSubscriber<PermissionsResult> testSubscriber = TestSubscriber.create();
             rxRuntimePermissions.requestPermissions(requestPermissions, trigger, REQUEST_CODE_1, MULTIPLE_PERMISSIONS)
                     .subscribe(testSubscriber);
 
@@ -128,12 +135,12 @@ public class RxRuntimePermissionsTest {
                     new int[]{PERMISSION_GRANTED, PERMISSION_DENIED, PERMISSION_GRANTED}
             );
 
-            final List<PermissionResult> permissionsResult = Arrays.asList(
-                    new PermissionResult(REQUEST_CODE_1, MULTIPLE_PERMISSIONS[0], PERMISSION_GRANTED),
-                    new PermissionResult(REQUEST_CODE_1, MULTIPLE_PERMISSIONS[1], PERMISSION_DENIED),
-                    new PermissionResult(REQUEST_CODE_1, MULTIPLE_PERMISSIONS[2], PERMISSION_GRANTED)
+            final List<Permission> permissions = asList(
+                    new Permission(MULTIPLE_PERMISSIONS[0], PERMISSION_GRANTED),
+                    new Permission(MULTIPLE_PERMISSIONS[1], PERMISSION_DENIED),
+                    new Permission(MULTIPLE_PERMISSIONS[2], PERMISSION_GRANTED)
             );
-            testSubscriber.assertReceivedOnNext(singletonList(permissionsResult));
+            testSubscriber.assertReceivedOnNext(asList(new PermissionsResult(REQUEST_CODE_1, permissions)));
             testSubscriber.assertNoTerminalEvent();
         }
     }
@@ -143,12 +150,12 @@ public class RxRuntimePermissionsTest {
         final RxRuntimePermissions rxRuntimePermissions = new RxRuntimePermissions();
 
         final PublishSubject<Object> trigger1 = PublishSubject.create();
-        final TestSubscriber<List<PermissionResult>> testSubscriber1 = TestSubscriber.create();
+        final TestSubscriber<PermissionsResult> testSubscriber1 = TestSubscriber.create();
         rxRuntimePermissions.requestPermissions(requestPermissions, trigger1, REQUEST_CODE_1, SINGLE_PERMISSION)
                 .subscribe(testSubscriber1);
 
         final PublishSubject<Object> trigger2 = PublishSubject.create();
-        final TestSubscriber<List<PermissionResult>> testSubscriber2 = TestSubscriber.create();
+        final TestSubscriber<PermissionsResult> testSubscriber2 = TestSubscriber.create();
         rxRuntimePermissions.requestPermissions(requestPermissions, trigger2, REQUEST_CODE_2, MULTIPLE_PERMISSIONS)
                 .subscribe(testSubscriber2);
 
@@ -160,10 +167,10 @@ public class RxRuntimePermissionsTest {
                 new int[]{PERMISSION_GRANTED}
         );
 
-        final List<PermissionResult> permissionsResult1 = singletonList(
-                new PermissionResult(REQUEST_CODE_1, SINGLE_PERMISSION[0], PERMISSION_GRANTED)
+        final List<Permission> permissions1 = asList(
+                new Permission(SINGLE_PERMISSION[0], PERMISSION_GRANTED)
         );
-        testSubscriber1.assertReceivedOnNext(singletonList(permissionsResult1));
+        testSubscriber1.assertReceivedOnNext(asList(new PermissionsResult(REQUEST_CODE_1, permissions1)));
         testSubscriber1.assertNoTerminalEvent();
         testSubscriber2.assertNoValues();
 
@@ -175,12 +182,12 @@ public class RxRuntimePermissionsTest {
                 new int[]{PERMISSION_GRANTED, PERMISSION_DENIED, PERMISSION_GRANTED}
         );
 
-        final List<PermissionResult> permissionsResult2 = Arrays.asList(
-                new PermissionResult(REQUEST_CODE_2, MULTIPLE_PERMISSIONS[0], PERMISSION_GRANTED),
-                new PermissionResult(REQUEST_CODE_2, MULTIPLE_PERMISSIONS[1], PERMISSION_DENIED),
-                new PermissionResult(REQUEST_CODE_2, MULTIPLE_PERMISSIONS[2], PERMISSION_GRANTED)
+        final List<Permission> permissions2 = asList(
+                new Permission(MULTIPLE_PERMISSIONS[0], PERMISSION_GRANTED),
+                new Permission(MULTIPLE_PERMISSIONS[1], PERMISSION_DENIED),
+                new Permission(MULTIPLE_PERMISSIONS[2], PERMISSION_GRANTED)
         );
-        testSubscriber2.assertReceivedOnNext(singletonList(permissionsResult2));
+        testSubscriber2.assertReceivedOnNext(asList(new PermissionsResult(REQUEST_CODE_2, permissions2)));
         testSubscriber2.assertNoTerminalEvent();
         testSubscriber1.assertValueCount(1);
     }
@@ -190,7 +197,7 @@ public class RxRuntimePermissionsTest {
         final RxRuntimePermissions rxRuntimePermissionsBefore = new RxRuntimePermissions();
 
         final PublishSubject<Object> triggerBefore = PublishSubject.create();
-        final TestSubscriber<List<PermissionResult>> testSubscriberBefore = TestSubscriber.create();
+        final TestSubscriber<PermissionsResult> testSubscriberBefore = TestSubscriber.create();
         rxRuntimePermissionsBefore.requestPermissions(requestPermissions, triggerBefore, REQUEST_CODE_1, SINGLE_PERMISSION)
                 .subscribe(testSubscriberBefore);
 
@@ -202,7 +209,7 @@ public class RxRuntimePermissionsTest {
         final RxRuntimePermissions rxRuntimePermissionsAfter = new RxRuntimePermissions();
 
         final PublishSubject<Object> triggerAfter = PublishSubject.create();
-        final TestSubscriber<List<PermissionResult>> testSubscriberAfter = TestSubscriber.create();
+        final TestSubscriber<PermissionsResult> testSubscriberAfter = TestSubscriber.create();
         rxRuntimePermissionsAfter.requestPermissions(requestPermissions, triggerAfter, REQUEST_CODE_1, SINGLE_PERMISSION)
                 .subscribe(testSubscriberAfter);
 
@@ -213,10 +220,10 @@ public class RxRuntimePermissionsTest {
                 new int[]{PERMISSION_GRANTED}
         );
 
-        final List<PermissionResult> permissionsResult = singletonList(
-                new PermissionResult(REQUEST_CODE_1, SINGLE_PERMISSION[0], PERMISSION_GRANTED)
+        final List<Permission> permissions = asList(
+                new Permission(SINGLE_PERMISSION[0], PERMISSION_GRANTED)
         );
-        testSubscriberAfter.assertReceivedOnNext(singletonList(permissionsResult));
+        testSubscriberAfter.assertReceivedOnNext(asList(new PermissionsResult(REQUEST_CODE_1, permissions)));
         testSubscriberAfter.assertNoTerminalEvent();
     }
 }

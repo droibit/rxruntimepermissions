@@ -5,8 +5,6 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 
-import java.util.List;
-
 import rx.Observable;
 import rx.functions.Action2;
 import rx.functions.Func1;
@@ -48,14 +46,14 @@ class RequestPermissionsSourceFactory {
         }
     }
 
-    private static class AreAllGranted implements Func1<List<PermissionResult>, Boolean> {
+    private static class AreAllGranted implements Func1<PermissionsResult, Boolean> {
 
         @Override
-        public Boolean call(List<PermissionResult> permissionsResult) {
-            return Observable.from(permissionsResult).all(new Func1<PermissionResult, Boolean>() {
+        public Boolean call(PermissionsResult permissionsResult) {
+            return Observable.from(permissionsResult.permissions).all(new Func1<PermissionsResult.Permission, Boolean>() {
                 @Override
-                public Boolean call(PermissionResult permissionResult) {
-                    return permissionResult.isGranted();
+                public Boolean call(PermissionsResult.Permission permission) {
+                    return permission.isGranted();
                 }
             }).toBlocking().single();
         }

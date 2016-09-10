@@ -1,9 +1,7 @@
 package com.github.droibit.rxruntimepermissions;
 
 
-import android.annotation.TargetApi;
 import android.app.Activity;
-import android.os.Build;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.util.Pair;
@@ -22,7 +20,7 @@ import rx.subscriptions.CompositeSubscription;
 
 public class RxRuntimePermissions {
 
-    private final Map<Integer, Pair<PublishSubject<List<PermissionResult>>, Boolean>> subjects;
+    private final Map<Integer, Pair<PublishSubject<PermissionsResult>, Boolean>> subjects;
 
     @Nullable
     private final CompositeSubscription subscriptions;
@@ -40,18 +38,17 @@ public class RxRuntimePermissions {
         return new RequestPermissionsSourceFactory.FromActivity(this, activity);
     }
 
-    @TargetApi(Build.VERSION_CODES.M)
     public void onRequestPermissionsResult(
             int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        final Pair<PublishSubject<List<PermissionResult>>, Boolean> triggerableSubject = subjects.get(requestCode);
+        final Pair<PublishSubject<PermissionsResult>, Boolean> triggerableSubject = subjects.get(requestCode);
         if (triggerableSubject == null) {
             return;
         }
 
-        final PublishSubject<List<PermissionResult>> subject = triggerableSubject.first;
+        final PublishSubject<PermissionsResult> subject = triggerableSubject.first;
         final boolean hasTrigger = triggerableSubject.second;
 
-        final List<PermissionResult> permissionsResult = createPermissionsResult(requestCode, permissions, grantResults);
+        final PermissionsResult permissionsResult = createPermissionsResult(requestCode, permissions, grantResults);
         subject.onNext(permissionsResult);
 
         if (!hasTrigger) {
@@ -60,11 +57,11 @@ public class RxRuntimePermissions {
         }
     }
 
-    Observable<List<PermissionResult>> requestPermissions(
+    Observable<PermissionsResult> requestPermissions(
             final Action2<Integer, String[]> requestPermissions,
             @Nullable Observable<?> trigger, final int requestCode, final String[] permissions) {
         final boolean hasTrigger = trigger != null;
-        final PublishSubject<List<PermissionResult>> subject = createSubjectIfNotExist(requestCode, hasTrigger);
+        final PublishSubject<PermissionsResult> subject = createSubjectIfNotExist(requestCode, hasTrigger);
 
         final Observable<?> observable = trigger != null ? trigger : Observable.just(null);
         final Subscription subscription = observable.subscribe(new Action1<Object>() {
@@ -80,24 +77,24 @@ public class RxRuntimePermissions {
         return subject;
     }
 
-    private PublishSubject<List<PermissionResult>> createSubjectIfNotExist(int requestCode, boolean hasTrigger) {
+    private PublishSubject<PermissionsResult> createSubjectIfNotExist(int requestCode, boolean hasTrigger) {
         if (!subjects.containsKey(requestCode)) {
-            final PublishSubject<List<PermissionResult>> newSubject = PublishSubject.create();
+            final PublishSubject<PermissionsResult> newSubject = PublishSubject.create();
             subjects.put(requestCode, Pair.create(newSubject, hasTrigger));
             return newSubject;
         }
         return subjects.get(requestCode).first;
     }
 
-    private List<PermissionResult> createPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+    private PermissionsResult createPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
         if (permissions.length != grantResults.length) {
             throw new IllegalArgumentException("permissions.length != grantResults.length");
         }
 
-        final List<PermissionResult> permissionsResult = new ArrayList<>(permissions.length);
+        final List<PermissionsResult.Permission> results = new ArrayList<>(permissions.length);
         for (int i = 0, length = permissions.length; i < length; i++) {
-            permissionsResult.add(new PermissionResult(requestCode, permissions[i], grantResults[i]));
+            results.add(new PermissionsResult.Permission(permissions[i], grantResults[i]));
         }
-        return permissionsResult;
+        return new PermissionsResult(requestCode, results);
     }
 }

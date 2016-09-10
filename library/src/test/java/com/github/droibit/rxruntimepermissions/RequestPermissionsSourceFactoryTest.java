@@ -49,8 +49,8 @@ public class RequestPermissionsSourceFactoryTest {
     public void requestPermissions_allGranted() {
         // single permission
         {
-            final List<PermissionResult> permissionsResult = Collections.singletonList(
-                    new PermissionResult(REQUEST_CODE, PERMISSIONS[0], PERMISSION_GRANTED)
+            final List<PermissionsResult.Permission> permissions = Collections.singletonList(
+                    new PermissionsResult.Permission(PERMISSIONS[0], PERMISSION_GRANTED)
             );
 
             when(rxRuntimePermissions.requestPermissions(
@@ -58,7 +58,7 @@ public class RequestPermissionsSourceFactoryTest {
                     (Observable<?>) anyObject(),
                     anyInt(),
                     any(String[].class)
-            )).thenReturn(Observable.just(permissionsResult));
+            )).thenReturn(Observable.just(new PermissionsResult(REQUEST_CODE, permissions)));
 
             final TestSubscriber<Boolean> testSubscriber = TestSubscriber.create();
             requestPermissionsSource.requestPermissions(REQUEST_CODE, PERMISSIONS[0])
@@ -71,10 +71,10 @@ public class RequestPermissionsSourceFactoryTest {
 
         // multiple permissions
         {
-            final List<PermissionResult> permissionsResult = Arrays.asList(
-                    new PermissionResult(REQUEST_CODE, PERMISSIONS[0], PERMISSION_GRANTED),
-                    new PermissionResult(REQUEST_CODE, PERMISSIONS[1], PERMISSION_GRANTED),
-                    new PermissionResult(REQUEST_CODE, PERMISSIONS[2], PERMISSION_GRANTED)
+            final List<PermissionsResult.Permission> permissions = Arrays.asList(
+                    new PermissionsResult.Permission(PERMISSIONS[0], PERMISSION_GRANTED),
+                    new PermissionsResult.Permission(PERMISSIONS[1], PERMISSION_GRANTED),
+                    new PermissionsResult.Permission(PERMISSIONS[2], PERMISSION_GRANTED)
             );
 
             when(rxRuntimePermissions.requestPermissions(
@@ -82,7 +82,7 @@ public class RequestPermissionsSourceFactoryTest {
                     (Observable<?>) anyObject(),
                     anyInt(),
                     any(String[].class)
-            )).thenReturn(Observable.just(permissionsResult));
+            )).thenReturn(Observable.just(new PermissionsResult(REQUEST_CODE, permissions)));
 
             final TestSubscriber<Boolean> testSubscriber = TestSubscriber.create();
             requestPermissionsSource.requestPermissions(REQUEST_CODE, PERMISSIONS[0])
@@ -97,10 +97,10 @@ public class RequestPermissionsSourceFactoryTest {
     @SuppressWarnings("unchecked")
     @Test
     public void requestPermissions_someDenied() {
-        final List<PermissionResult> permissionsResult = Arrays.asList(
-                new PermissionResult(REQUEST_CODE, PERMISSIONS[0], PERMISSION_GRANTED),
-                new PermissionResult(REQUEST_CODE, PERMISSIONS[1], PERMISSION_DENIED),
-                new PermissionResult(REQUEST_CODE, PERMISSIONS[2], PERMISSION_GRANTED)
+        final List<PermissionsResult.Permission> permissions = Arrays.asList(
+                new PermissionsResult.Permission(PERMISSIONS[0], PERMISSION_GRANTED),
+                new PermissionsResult.Permission(PERMISSIONS[1], PERMISSION_DENIED),
+                new PermissionsResult.Permission(PERMISSIONS[2], PERMISSION_GRANTED)
         );
 
         when(rxRuntimePermissions.requestPermissions(
@@ -108,7 +108,7 @@ public class RequestPermissionsSourceFactoryTest {
                 (Observable<?>) anyObject(),
                 anyInt(),
                 any(String[].class)
-        )).thenReturn(Observable.just(permissionsResult));
+        )).thenReturn(Observable.just(new PermissionsResult(REQUEST_CODE, permissions)));
 
         final TestSubscriber<Boolean> testSubscriber = TestSubscriber.create();
         requestPermissionsSource.requestPermissions(REQUEST_CODE, PERMISSIONS[0])
@@ -124,8 +124,8 @@ public class RequestPermissionsSourceFactoryTest {
     public void requestPermissions_allDenied() {
         // onsinglee permission
         {
-            final List<PermissionResult> permissionsResult = Collections.singletonList(
-                    new PermissionResult(REQUEST_CODE, PERMISSIONS[0], PERMISSION_DENIED)
+            final List<PermissionsResult.Permission> permissions = Collections.singletonList(
+                    new PermissionsResult.Permission(PERMISSIONS[0], PERMISSION_DENIED)
             );
 
             when(rxRuntimePermissions.requestPermissions(
@@ -133,7 +133,7 @@ public class RequestPermissionsSourceFactoryTest {
                     (Observable<?>) anyObject(),
                     anyInt(),
                     any(String[].class)
-            )).thenReturn(Observable.just(permissionsResult));
+            )).thenReturn(Observable.just(new PermissionsResult(REQUEST_CODE, permissions)));
 
             final TestSubscriber<Boolean> testSubscriber = TestSubscriber.create();
             requestPermissionsSource.requestPermissions(REQUEST_CODE, PERMISSIONS[0])
@@ -146,10 +146,10 @@ public class RequestPermissionsSourceFactoryTest {
 
         // multiple permissions
         {
-            final List<PermissionResult> permissionsResult = Arrays.asList(
-                    new PermissionResult(REQUEST_CODE, PERMISSIONS[0], PERMISSION_DENIED),
-                    new PermissionResult(REQUEST_CODE, PERMISSIONS[1], PERMISSION_DENIED),
-                    new PermissionResult(REQUEST_CODE, PERMISSIONS[2], PERMISSION_DENIED)
+            final List<PermissionsResult.Permission> permissions = Arrays.asList(
+                    new PermissionsResult.Permission(PERMISSIONS[0], PERMISSION_DENIED),
+                    new PermissionsResult.Permission(PERMISSIONS[1], PERMISSION_DENIED),
+                    new PermissionsResult.Permission(PERMISSIONS[2], PERMISSION_DENIED)
             );
 
             when(rxRuntimePermissions.requestPermissions(
@@ -157,7 +157,7 @@ public class RequestPermissionsSourceFactoryTest {
                     (Observable<?>) anyObject(),
                     anyInt(),
                     any(String[].class)
-            )).thenReturn(Observable.just(permissionsResult));
+            )).thenReturn(Observable.just(new PermissionsResult(REQUEST_CODE, permissions)));
 
             final TestSubscriber<Boolean> testSubscriber = TestSubscriber.create();
             requestPermissionsSource.requestPermissions(REQUEST_CODE, PERMISSIONS[0])
