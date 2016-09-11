@@ -10,7 +10,7 @@ repositories {
 }
 
 dependencies {
-    compile "com.github.droibit:rxruntimepermissions:0.0.1"
+    compile "com.github.droibit:rxruntimepermissions:0.0.2"
 }
 ```
 
