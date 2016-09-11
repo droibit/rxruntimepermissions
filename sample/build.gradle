@@ -1,5 +1,11 @@
 apply plugin: 'com.android.application'
 
+buildscript {
+    ext {
+        rxBindingVersion = '0.4.0'
+    }
+}
+
 android {
     compileSdkVersion rootProject.ext.compileSdkVersion
     buildToolsVersion rootProject.ext.buildToolsVersion
@@ -17,6 +23,10 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_7
+        targetCompatibility JavaVersion.VERSION_1_7
+    }
 }
 
 dependencies {
@@ -24,4 +34,6 @@ dependencies {
 
     compile "com.android.support:appcompat-v7:$supportLibraryVersion"
     compile "com.android.support:design:$supportLibraryVersion"
+
+    compile "com.jakewharton.rxbinding:rxbinding:$rxBindingVersion"
 }
