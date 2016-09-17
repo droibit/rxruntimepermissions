@@ -7,7 +7,6 @@ import android.support.v4.app.ActivityCompat;
 
 import rx.Observable;
 import rx.functions.Action2;
-import rx.functions.Func1;
 
 class RequestPermissionsSourceFactory {
 
@@ -37,7 +36,7 @@ class RequestPermissionsSourceFactory {
         @Override
         public Observable<Boolean> requestPermissions(int requestCode, @NonNull String... permissions) {
             return rxRuntimePermissions.requestPermissions(this, trigger, requestCode, checkNotNull(permissions))
-                    .map(new AreAllGranted());
+                    .map(new Predicates.AreGranted());
         }
 
         @Override
@@ -62,20 +61,7 @@ class RequestPermissionsSourceFactory {
         public Observable<Boolean> requestPermissions(int requestCode, @NonNull String... permissions) {
             return rxRuntimePermissions
                     .requestPermissions(action.requestPermissions, action.trigger, requestCode, checkNotNull(permissions))
-                    .map(new AreAllGranted());
-        }
-    }
-
-    private static class AreAllGranted implements Func1<PermissionsResult, Boolean> {
-
-        @Override
-        public Boolean call(PermissionsResult permissionsResult) {
-            return Observable.from(permissionsResult.permissions).all(new Func1<PermissionsResult.Permission, Boolean>() {
-                @Override
-                public Boolean call(PermissionsResult.Permission permission) {
-                    return permission.isGranted();
-                }
-            }).toBlocking().single();
+                    .map(new Predicates.AreGranted());
         }
     }
 
