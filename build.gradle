@@ -2,8 +2,8 @@
 
 buildscript {
     ext {
-        supportLibraryVersion = '24.2.0'
-        rxJavaVersion = '1.1.9'
+        supportLibraryVersion = '24.2.1'
+        rxJavaVersion = '1.2.1'
     }
     repositories {
         jcenter()
