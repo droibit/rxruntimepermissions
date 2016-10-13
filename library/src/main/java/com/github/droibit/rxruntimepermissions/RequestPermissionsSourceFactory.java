@@ -25,7 +25,7 @@ class RequestPermissionsSourceFactory {
 
         FromActivity(RxRuntimePermissions rxRuntimePermissions, Activity activity) {
             this.rxRuntimePermissions = rxRuntimePermissions;
-            this.activity = activity;
+            this.activity = checkNotNull(activity);
         }
 
         @Override
@@ -43,6 +43,26 @@ class RequestPermissionsSourceFactory {
         @Override
         public void call(@NonNull Integer requestCode, @NonNull String[] permissions) {
             ActivityCompat.requestPermissions(activity, permissions, requestCode);
+        }
+    }
+
+    public static class FromAction implements PendingRequestPermissionsSource {
+
+        private final RxRuntimePermissions rxRuntimePermissions;
+
+        private final PendingRequestPermissionsAction action;
+
+
+        FromAction(RxRuntimePermissions rxRuntimePermissions, PendingRequestPermissionsAction action) {
+            this.rxRuntimePermissions = rxRuntimePermissions;
+            this.action = checkNotNull(action);
+        }
+
+        @Override
+        public Observable<Boolean> requestPermissions(int requestCode, @NonNull String... permissions) {
+            return rxRuntimePermissions
+                    .requestPermissions(action.requestPermissions, action.trigger, requestCode, checkNotNull(permissions))
+                    .map(new AreAllGranted());
         }
     }
 

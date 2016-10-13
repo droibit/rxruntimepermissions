@@ -38,6 +38,10 @@ public class RxRuntimePermissions {
         return new RequestPermissionsSourceFactory.FromActivity(this, activity);
     }
 
+    public PendingRequestPermissionsSource from(@NonNull PendingRequestPermissionsAction action) {
+        return new RequestPermissionsSourceFactory.FromAction(this, action);
+    }
+
     public void onRequestPermissionsResult(
             int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         final Pair<PublishSubject<PermissionsResult>, Boolean> triggerableSubject = subjects.get(requestCode);
@@ -59,7 +63,9 @@ public class RxRuntimePermissions {
 
     Observable<PermissionsResult> requestPermissions(
             final Action2<Integer, String[]> requestPermissions,
-            @Nullable Observable<?> trigger, final int requestCode, final String[] permissions) {
+            @Nullable Observable<?> trigger,
+            final int requestCode,
+            final String[] permissions) {
         final boolean hasTrigger = trigger != null;
         final PublishSubject<PermissionsResult> subject = createSubjectIfNotExist(requestCode, hasTrigger);
 
