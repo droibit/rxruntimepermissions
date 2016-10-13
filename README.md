@@ -1,8 +1,6 @@
 # RxRuntimePermissions
 [![Build Status](https://travis-ci.org/droibit/rxruntimepermissions.svg?branch=develop)](https://travis-ci.org/droibit/rxruntimepermissions) [![](https://jitpack.io/v/droibit/RxRuntimePermissions.svg)](https://jitpack.io/#droibit/RxRuntimePermissions)
 
-
-
 ## Download
 
 Add the following code to build.gradle.
@@ -13,7 +11,7 @@ repositories {
 }
 
 dependencies {
-    compile "com.github.droibit:rxruntimepermissions:0.0.2"
+    compile "com.github.droibit:rxruntimepermissions:0.0.3"
 }
 ```
 
