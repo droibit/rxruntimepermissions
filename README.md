@@ -1,4 +1,7 @@
 # RxRuntimePermissions
+[![Build Status](https://travis-ci.org/droibit/rxruntimepermissions.svg?branch=develop)](https://travis-ci.org/droibit/rxruntimepermissions) [![](https://jitpack.io/v/droibit/RxRuntimePermissions.svg)](https://jitpack.io/#droibit/RxRuntimePermissions)
+
+
 
 ## Download
 
