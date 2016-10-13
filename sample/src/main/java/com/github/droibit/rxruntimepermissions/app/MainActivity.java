@@ -1,5 +1,6 @@
 package com.github.droibit.rxruntimepermissions.app;
 
+import com.github.droibit.rxruntimepermissions.PendingRequestPermissionsAction;
 import com.github.droibit.rxruntimepermissions.RxRuntimePermissions;
 import com.jakewharton.rxbinding.view.RxView;
 
@@ -21,8 +22,11 @@ import rx.functions.Action1;
 public class MainActivity extends AppCompatActivity {
 
     private static final int REQUEST_CAMERA = 1;
+    private static final int REQUEST_CALL = 2;
 
     private final RxRuntimePermissions rxRuntimePermissions = new RxRuntimePermissions();
+
+    private final PendingRequestPermissionsAction pendingRequestPermissionsAction = new PendingRequestPermissionsAction(this);
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,6 +48,16 @@ public class MainActivity extends AppCompatActivity {
                         Toast.makeText(MainActivity.this, "Camera Permission: " + msg, Toast.LENGTH_SHORT).show();
                     }
                 });
+
+        rxRuntimePermissions.from(pendingRequestPermissionsAction)
+                .requestPermissions(REQUEST_CALL, Manifest.permission.CALL_PHONE)
+                .subscribe(new Action1<Boolean>() {
+                    @Override
+                    public void call(Boolean granted) {
+                        final String msg = granted ? "Granted" : "Denied";
+                        Toast.makeText(MainActivity.this, "Phone Permission: " + msg, Toast.LENGTH_SHORT).show();
+                    }
+                });
     }
 
     @Override
@@ -51,5 +65,9 @@ public class MainActivity extends AppCompatActivity {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
 
         rxRuntimePermissions.onRequestPermissionsResult(requestCode, permissions, grantResults);
+    }
+
+    public void onClickCall(View v) {
+        pendingRequestPermissionsAction.call();
     }
 }
