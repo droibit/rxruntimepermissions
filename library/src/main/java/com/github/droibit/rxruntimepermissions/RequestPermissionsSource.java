@@ -12,5 +12,5 @@ public interface RequestPermissionsSource {
     RequestPermissionsSource on(@NonNull Observable<?> trigger);
 
     @CheckResult
-    Observable<Boolean> requestPermissions(int requestCode, @NonNull String... permissions);
+    Observable<PermissionsResult> requestPermissions(int requestCode, @NonNull String... permissions);
 }

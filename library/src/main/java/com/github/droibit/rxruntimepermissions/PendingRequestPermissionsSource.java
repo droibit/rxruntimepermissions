@@ -8,5 +8,5 @@ import rx.Observable;
 public interface PendingRequestPermissionsSource {
 
     @CheckResult
-    Observable<Boolean> requestPermissions(int requestCode, @NonNull String... permissions);
+    Observable<PermissionsResult> requestPermissions(int requestCode, @NonNull String... permissions);
 }

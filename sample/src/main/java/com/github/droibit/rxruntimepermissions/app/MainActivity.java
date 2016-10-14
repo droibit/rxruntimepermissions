@@ -1,7 +1,10 @@
 package com.github.droibit.rxruntimepermissions.app;
 
+import com.github.droibit.rxruntimepermissions.GrantResult;
 import com.github.droibit.rxruntimepermissions.PendingRequestPermissionsAction;
+import com.github.droibit.rxruntimepermissions.PermissionsResult;
 import com.github.droibit.rxruntimepermissions.RxRuntimePermissions;
+import com.github.droibit.rxruntimepermissions.Transforms;
 import com.jakewharton.rxbinding.view.RxView;
 
 import android.Manifest;
@@ -41,6 +44,7 @@ public class MainActivity extends AppCompatActivity {
         rxRuntimePermissions.from(this)
                 .on(trigger)
                 .requestPermissions(REQUEST_CAMERA, Manifest.permission.CAMERA)
+                .map(Transforms.areGranted())
                 .subscribe(new Action1<Boolean>() {
                     @Override
                     public void call(Boolean granted) {
@@ -51,11 +55,11 @@ public class MainActivity extends AppCompatActivity {
 
         rxRuntimePermissions.from(pendingRequestPermissionsAction)
                 .requestPermissions(REQUEST_CALL, Manifest.permission.CALL_PHONE)
-                .subscribe(new Action1<Boolean>() {
+                .map(Transforms.toSingleGrantResult())
+                .subscribe(new Action1<GrantResult>() {
                     @Override
-                    public void call(Boolean granted) {
-                        final String msg = granted ? "Granted" : "Denied";
-                        Toast.makeText(MainActivity.this, "Phone Permission: " + msg, Toast.LENGTH_SHORT).show();
+                    public void call(GrantResult result) {
+                        Toast.makeText(MainActivity.this, "Phone Permission: " + result.toString(), Toast.LENGTH_SHORT).show();
                     }
                 });
     }

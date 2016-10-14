@@ -13,10 +13,11 @@ import java.util.List;
 
 import rx.Observable;
 import rx.functions.Action2;
+import rx.functions.Func1;
 import rx.observers.TestSubscriber;
 
-import static android.content.pm.PackageManager.PERMISSION_DENIED;
-import static android.content.pm.PackageManager.PERMISSION_GRANTED;
+import static org.hamcrest.CoreMatchers.*;
+import static org.junit.Assert.*;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyInt;
 import static org.mockito.Matchers.anyObject;
@@ -49,48 +50,56 @@ public class RequestPermissionsSourceFactoryTest {
     public void requestPermissions_allGranted() {
         // single permission
         {
-            final List<PermissionsResult.Permission> permissions = Collections.singletonList(
-                    new PermissionsResult.Permission(PERMISSIONS[0], PERMISSION_GRANTED)
+            final List<PermissionsResult.Permission> permissions = Arrays.asList(
+                    new PermissionsResult.Permission(PERMISSIONS[0], GrantResult.GRANTED)
             );
 
             when(rxRuntimePermissions.requestPermissions(
                     (Action2<Integer, String[]>) anyObject(),
+                    (Func1<String, Boolean>) anyObject(),
                     (Observable<?>) anyObject(),
                     anyInt(),
                     any(String[].class)
             )).thenReturn(Observable.just(new PermissionsResult(REQUEST_CODE, permissions)));
 
-            final TestSubscriber<Boolean> testSubscriber = TestSubscriber.create();
+            final TestSubscriber<PermissionsResult> testSubscriber = TestSubscriber.create();
             requestPermissionsSource.requestPermissions(REQUEST_CODE, PERMISSIONS[0])
                     .subscribe(testSubscriber);
 
             testSubscriber.assertNoErrors();
             testSubscriber.assertValueCount(1);
-            testSubscriber.assertValue(true);
+
+            final PermissionsResult permissionsResult = testSubscriber.getOnNextEvents().get(0);
+            assertThat(permissionsResult.requestCode, is(equalTo(REQUEST_CODE)));
+            assertThat(permissionsResult.permissions, is(equalTo(permissions)));
         }
 
         // multiple permissions
         {
             final List<PermissionsResult.Permission> permissions = Arrays.asList(
-                    new PermissionsResult.Permission(PERMISSIONS[0], PERMISSION_GRANTED),
-                    new PermissionsResult.Permission(PERMISSIONS[1], PERMISSION_GRANTED),
-                    new PermissionsResult.Permission(PERMISSIONS[2], PERMISSION_GRANTED)
+                    new PermissionsResult.Permission(PERMISSIONS[0], GrantResult.GRANTED),
+                    new PermissionsResult.Permission(PERMISSIONS[1], GrantResult.GRANTED),
+                    new PermissionsResult.Permission(PERMISSIONS[2], GrantResult.GRANTED)
             );
 
             when(rxRuntimePermissions.requestPermissions(
                     (Action2<Integer, String[]>) anyObject(),
+                    (Func1<String, Boolean>) anyObject(),
                     (Observable<?>) anyObject(),
                     anyInt(),
                     any(String[].class)
             )).thenReturn(Observable.just(new PermissionsResult(REQUEST_CODE, permissions)));
 
-            final TestSubscriber<Boolean> testSubscriber = TestSubscriber.create();
+            final TestSubscriber<PermissionsResult> testSubscriber = TestSubscriber.create();
             requestPermissionsSource.requestPermissions(REQUEST_CODE, PERMISSIONS[0])
                     .subscribe(testSubscriber);
 
             testSubscriber.assertNoErrors();
             testSubscriber.assertValueCount(1);
-            testSubscriber.assertValue(true);
+
+            final PermissionsResult permissionsResult = testSubscriber.getOnNextEvents().get(0);
+            assertThat(permissionsResult.requestCode, is(equalTo(REQUEST_CODE)));
+            assertThat(permissionsResult.permissions, is(equalTo(permissions)));
         }
     }
 
@@ -98,25 +107,29 @@ public class RequestPermissionsSourceFactoryTest {
     @Test
     public void requestPermissions_someDenied() {
         final List<PermissionsResult.Permission> permissions = Arrays.asList(
-                new PermissionsResult.Permission(PERMISSIONS[0], PERMISSION_GRANTED),
-                new PermissionsResult.Permission(PERMISSIONS[1], PERMISSION_DENIED),
-                new PermissionsResult.Permission(PERMISSIONS[2], PERMISSION_GRANTED)
+                new PermissionsResult.Permission(PERMISSIONS[0], GrantResult.GRANTED),
+                new PermissionsResult.Permission(PERMISSIONS[1], GrantResult.SHOULD_SHOW_RATIONALE),
+                new PermissionsResult.Permission(PERMISSIONS[2], GrantResult.GRANTED)
         );
 
         when(rxRuntimePermissions.requestPermissions(
                 (Action2<Integer, String[]>) anyObject(),
+                (Func1<String, Boolean>) anyObject(),
                 (Observable<?>) anyObject(),
                 anyInt(),
                 any(String[].class)
         )).thenReturn(Observable.just(new PermissionsResult(REQUEST_CODE, permissions)));
 
-        final TestSubscriber<Boolean> testSubscriber = TestSubscriber.create();
+        final TestSubscriber<PermissionsResult> testSubscriber = TestSubscriber.create();
         requestPermissionsSource.requestPermissions(REQUEST_CODE, PERMISSIONS[0])
                 .subscribe(testSubscriber);
 
         testSubscriber.assertNoErrors();
         testSubscriber.assertValueCount(1);
-        testSubscriber.assertValue(false);
+
+        final PermissionsResult permissionsResult = testSubscriber.getOnNextEvents().get(0);
+        assertThat(permissionsResult.requestCode, is(equalTo(REQUEST_CODE)));
+        assertThat(permissionsResult.permissions, is(equalTo(permissions)));
     }
 
     @SuppressWarnings("unchecked")
@@ -125,47 +138,55 @@ public class RequestPermissionsSourceFactoryTest {
         // onsinglee permission
         {
             final List<PermissionsResult.Permission> permissions = Collections.singletonList(
-                    new PermissionsResult.Permission(PERMISSIONS[0], PERMISSION_DENIED)
+                    new PermissionsResult.Permission(PERMISSIONS[0], GrantResult.SHOULD_SHOW_RATIONALE)
             );
 
             when(rxRuntimePermissions.requestPermissions(
                     (Action2<Integer, String[]>) anyObject(),
+                    (Func1<String, Boolean>) anyObject(),
                     (Observable<?>) anyObject(),
                     anyInt(),
                     any(String[].class)
             )).thenReturn(Observable.just(new PermissionsResult(REQUEST_CODE, permissions)));
 
-            final TestSubscriber<Boolean> testSubscriber = TestSubscriber.create();
+            final TestSubscriber<PermissionsResult> testSubscriber = TestSubscriber.create();
             requestPermissionsSource.requestPermissions(REQUEST_CODE, PERMISSIONS[0])
                     .subscribe(testSubscriber);
 
             testSubscriber.assertNoErrors();
             testSubscriber.assertValueCount(1);
-            testSubscriber.assertValue(false);
+
+            final PermissionsResult permissionsResult = testSubscriber.getOnNextEvents().get(0);
+            assertThat(permissionsResult.requestCode, is(equalTo(REQUEST_CODE)));
+            assertThat(permissionsResult.permissions, is(equalTo(permissions)));
         }
 
         // multiple permissions
         {
             final List<PermissionsResult.Permission> permissions = Arrays.asList(
-                    new PermissionsResult.Permission(PERMISSIONS[0], PERMISSION_DENIED),
-                    new PermissionsResult.Permission(PERMISSIONS[1], PERMISSION_DENIED),
-                    new PermissionsResult.Permission(PERMISSIONS[2], PERMISSION_DENIED)
+                    new PermissionsResult.Permission(PERMISSIONS[0], GrantResult.SHOULD_SHOW_RATIONALE),
+                    new PermissionsResult.Permission(PERMISSIONS[1], GrantResult.SHOULD_SHOW_RATIONALE),
+                    new PermissionsResult.Permission(PERMISSIONS[2], GrantResult.SHOULD_SHOW_RATIONALE)
             );
 
             when(rxRuntimePermissions.requestPermissions(
                     (Action2<Integer, String[]>) anyObject(),
+                    (Func1<String, Boolean>) anyObject(),
                     (Observable<?>) anyObject(),
                     anyInt(),
                     any(String[].class)
             )).thenReturn(Observable.just(new PermissionsResult(REQUEST_CODE, permissions)));
 
-            final TestSubscriber<Boolean> testSubscriber = TestSubscriber.create();
+            final TestSubscriber<PermissionsResult> testSubscriber = TestSubscriber.create();
             requestPermissionsSource.requestPermissions(REQUEST_CODE, PERMISSIONS[0])
                     .subscribe(testSubscriber);
 
             testSubscriber.assertNoErrors();
             testSubscriber.assertValueCount(1);
-            testSubscriber.assertValue(false);
+
+            final PermissionsResult permissionsResult = testSubscriber.getOnNextEvents().get(0);
+            assertThat(permissionsResult.requestCode, is(equalTo(REQUEST_CODE)));
+            assertThat(permissionsResult.permissions, is(equalTo(permissions)));
         }
     }
 }

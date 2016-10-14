@@ -4,23 +4,21 @@ import android.support.annotation.NonNull;
 
 import java.util.List;
 
-import static android.content.pm.PackageManager.PERMISSION_GRANTED;
-
 public class PermissionsResult {
 
     public static class Permission {
 
         public final String name;
 
-        public final int grantResult;
+        public final GrantResult grantResult;
 
-        public Permission(@NonNull String name, int grantResult) {
+        public Permission(@NonNull String name, @NonNull GrantResult grantResult) {
             this.name = name;
             this.grantResult = grantResult;
         }
 
         public boolean isGranted() {
-            return grantResult == PERMISSION_GRANTED;
+            return grantResult == GrantResult.GRANTED;
         }
 
         @Override
@@ -40,7 +38,7 @@ public class PermissionsResult {
         @Override
         public int hashCode() {
             int result = name.hashCode();
-            result = 31 * result + grantResult;
+            result = 31 * result + grantResult.hashCode();
             return result;
         }
 
@@ -57,31 +55,9 @@ public class PermissionsResult {
 
     public final List<Permission> permissions;
 
-    PermissionsResult(int requestCode, @NonNull List<Permission> permissions) {
+    public PermissionsResult(int requestCode, @NonNull List<Permission> permissions) {
         this.requestCode = requestCode;
         this.permissions = permissions;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (!(o instanceof PermissionsResult)) {
-            return false;
-        }
-
-        PermissionsResult that = (PermissionsResult) o;
-
-        return requestCode == that.requestCode && permissions.equals(that.permissions);
-
-    }
-
-    @Override
-    public int hashCode() {
-        int result = requestCode;
-        result = 31 * result + permissions.hashCode();
-        return result;
     }
 
     @Override

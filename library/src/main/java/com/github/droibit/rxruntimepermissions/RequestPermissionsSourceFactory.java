@@ -7,13 +7,14 @@ import android.support.v4.app.ActivityCompat;
 
 import rx.Observable;
 import rx.functions.Action2;
+import rx.functions.Func1;
 
 class RequestPermissionsSourceFactory {
 
     private RequestPermissionsSourceFactory() {
     }
 
-    static class FromActivity implements RequestPermissionsSource, Action2<Integer, String[]> {
+    static class FromActivity implements RequestPermissionsSource, Action2<Integer, String[]>, Func1<String, Boolean> {
 
         private final RxRuntimePermissions rxRuntimePermissions;
 
@@ -34,18 +35,24 @@ class RequestPermissionsSourceFactory {
         }
 
         @Override
-        public Observable<Boolean> requestPermissions(int requestCode, @NonNull String... permissions) {
-            return rxRuntimePermissions.requestPermissions(this, trigger, requestCode, checkNotNull(permissions))
-                    .map(new Predicates.AreGranted());
+        public Observable<PermissionsResult> requestPermissions(int requestCode, @NonNull String... permissions) {
+            return rxRuntimePermissions.requestPermissions(
+                    /*requestPermissions=*/this,
+                    /*showRationaleChecker=*/this, trigger, requestCode, checkNotNull(permissions));
         }
 
         @Override
         public void call(@NonNull Integer requestCode, @NonNull String[] permissions) {
             ActivityCompat.requestPermissions(activity, permissions, requestCode);
         }
+
+        @Override
+        public Boolean call(@NonNull String permission) {
+            return ActivityCompat.shouldShowRequestPermissionRationale(activity, permission);
+        }
     }
 
-    public static class FromAction implements PendingRequestPermissionsSource {
+    static class FromAction implements PendingRequestPermissionsSource {
 
         private final RxRuntimePermissions rxRuntimePermissions;
 
@@ -58,10 +65,12 @@ class RequestPermissionsSourceFactory {
         }
 
         @Override
-        public Observable<Boolean> requestPermissions(int requestCode, @NonNull String... permissions) {
+        public Observable<PermissionsResult> requestPermissions(int requestCode, @NonNull String... permissions) {
             return rxRuntimePermissions
-                    .requestPermissions(action.requestPermissions, action.trigger, requestCode, checkNotNull(permissions))
-                    .map(new Predicates.AreGranted());
+                    .requestPermissions(
+                            action.requestPermissions,
+                            action.showRationaleChecker,
+                            action.trigger, requestCode, checkNotNull(permissions));
         }
     }
 
