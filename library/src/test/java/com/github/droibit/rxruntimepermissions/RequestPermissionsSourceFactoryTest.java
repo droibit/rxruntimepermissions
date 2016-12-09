@@ -22,7 +22,6 @@ import static org.hamcrest.CoreMatchers.*;
 import static org.junit.Assert.*;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyInt;
-import static org.mockito.Matchers.anyObject;
 import static org.mockito.Mockito.*;
 
 
@@ -57,9 +56,9 @@ public class RequestPermissionsSourceFactoryTest {
             );
 
             when(rxRuntimePermissions.requestPermissions(
-                    (Action2<Integer, String[]>) anyObject(),
-                    (Func1<String, Boolean>) anyObject(),
-                    (Observable<?>) anyObject(),
+                    (Action2<Integer, String[]>) any(),
+                    (Func1<String, Boolean>) any(),
+                    (Observable<?>) any(),
                     anyInt(),
                     any(String[].class)
             )).thenReturn(Observable.just(new PermissionsResult(REQUEST_CODE, permissions)));
@@ -85,9 +84,9 @@ public class RequestPermissionsSourceFactoryTest {
             );
 
             when(rxRuntimePermissions.requestPermissions(
-                    (Action2<Integer, String[]>) anyObject(),
-                    (Func1<String, Boolean>) anyObject(),
-                    (Observable<?>) anyObject(),
+                    (Action2<Integer, String[]>) any(),
+                    (Func1<String, Boolean>) any(),
+                    (Observable<?>) any(),
                     anyInt(),
                     any(String[].class)
             )).thenReturn(Observable.just(new PermissionsResult(REQUEST_CODE, permissions)));
@@ -115,9 +114,9 @@ public class RequestPermissionsSourceFactoryTest {
         );
 
         when(rxRuntimePermissions.requestPermissions(
-                (Action2<Integer, String[]>) anyObject(),
-                (Func1<String, Boolean>) anyObject(),
-                (Observable<?>) anyObject(),
+                (Action2<Integer, String[]>) any(),
+                (Func1<String, Boolean>) any(),
+                (Observable<?>) any(),
                 anyInt(),
                 any(String[].class)
         )).thenReturn(Observable.just(new PermissionsResult(REQUEST_CODE, permissions)));
@@ -144,9 +143,9 @@ public class RequestPermissionsSourceFactoryTest {
             );
 
             when(rxRuntimePermissions.requestPermissions(
-                    (Action2<Integer, String[]>) anyObject(),
-                    (Func1<String, Boolean>) anyObject(),
-                    (Observable<?>) anyObject(),
+                    (Action2<Integer, String[]>) any(),
+                    (Func1<String, Boolean>) any(),
+                    (Observable<?>) any(),
                     anyInt(),
                     any(String[].class)
             )).thenReturn(Observable.just(new PermissionsResult(REQUEST_CODE, permissions)));
@@ -172,9 +171,9 @@ public class RequestPermissionsSourceFactoryTest {
             );
 
             when(rxRuntimePermissions.requestPermissions(
-                    (Action2<Integer, String[]>) anyObject(),
-                    (Func1<String, Boolean>) anyObject(),
-                    (Observable<?>) anyObject(),
+                    (Action2<Integer, String[]>) any(),
+                    (Func1<String, Boolean>) any(),
+                    (Observable<?>) any(),
                     anyInt(),
                     any(String[].class)
             )).thenReturn(Observable.just(new PermissionsResult(REQUEST_CODE, permissions)));
