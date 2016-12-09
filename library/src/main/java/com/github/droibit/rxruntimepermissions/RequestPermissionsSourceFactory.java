@@ -28,17 +28,23 @@ class RequestPermissionsSourceFactory {
             this.activity = checkNotNull(activity);
         }
 
+        @NonNull
         @Override
         public RequestPermissionsSource on(@NonNull Observable<?> trigger) {
             this.trigger = checkNotNull(trigger);
             return this;
         }
 
+        @NonNull
         @Override
         public Observable<PermissionsResult> requestPermissions(int requestCode, @NonNull String... permissions) {
             return rxRuntimePermissions.requestPermissions(
                     /*requestPermissions=*/this,
-                    /*showRationaleChecker=*/this, trigger, requestCode, checkNotNull(permissions));
+                    /*showRationaleChecker=*/this,
+                    trigger,
+                    requestCode,
+                    checkNotNull(permissions)
+            );
         }
 
         @Override
@@ -58,7 +64,6 @@ class RequestPermissionsSourceFactory {
 
         private final PendingRequestPermissionsAction action;
 
-
         FromAction(RxRuntimePermissions rxRuntimePermissions, PendingRequestPermissionsAction action) {
             this.rxRuntimePermissions = rxRuntimePermissions;
             this.action = checkNotNull(action);
@@ -70,7 +75,8 @@ class RequestPermissionsSourceFactory {
                     .requestPermissions(
                             action.requestPermissions,
                             action.showRationaleChecker,
-                            action.trigger, requestCode, checkNotNull(permissions));
+                            action.trigger, requestCode, checkNotNull(permissions)
+                    );
         }
     }
 

@@ -1,5 +1,7 @@
 package com.github.droibit.rxruntimepermissions;
 
+import com.github.droibit.rxruntimepermissions.PermissionsResult.Permission;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
@@ -50,8 +52,8 @@ public class RequestPermissionsSourceFactoryTest {
     public void requestPermissions_allGranted() {
         // single permission
         {
-            final List<PermissionsResult.Permission> permissions = Arrays.asList(
-                    new PermissionsResult.Permission(PERMISSIONS[0], GrantResult.GRANTED)
+            final List<Permission> permissions = Arrays.asList(
+                    new Permission(PERMISSIONS[0], GrantResult.GRANTED)
             );
 
             when(rxRuntimePermissions.requestPermissions(
@@ -76,10 +78,10 @@ public class RequestPermissionsSourceFactoryTest {
 
         // multiple permissions
         {
-            final List<PermissionsResult.Permission> permissions = Arrays.asList(
-                    new PermissionsResult.Permission(PERMISSIONS[0], GrantResult.GRANTED),
-                    new PermissionsResult.Permission(PERMISSIONS[1], GrantResult.GRANTED),
-                    new PermissionsResult.Permission(PERMISSIONS[2], GrantResult.GRANTED)
+            final List<Permission> permissions = Arrays.asList(
+                    new Permission(PERMISSIONS[0], GrantResult.GRANTED),
+                    new Permission(PERMISSIONS[1], GrantResult.GRANTED),
+                    new Permission(PERMISSIONS[2], GrantResult.GRANTED)
             );
 
             when(rxRuntimePermissions.requestPermissions(
@@ -106,10 +108,10 @@ public class RequestPermissionsSourceFactoryTest {
     @SuppressWarnings("unchecked")
     @Test
     public void requestPermissions_someDenied() {
-        final List<PermissionsResult.Permission> permissions = Arrays.asList(
-                new PermissionsResult.Permission(PERMISSIONS[0], GrantResult.GRANTED),
-                new PermissionsResult.Permission(PERMISSIONS[1], GrantResult.SHOULD_SHOW_RATIONALE),
-                new PermissionsResult.Permission(PERMISSIONS[2], GrantResult.GRANTED)
+        final List<Permission> permissions = Arrays.asList(
+                new Permission(PERMISSIONS[0], GrantResult.GRANTED),
+                new Permission(PERMISSIONS[1], GrantResult.SHOULD_SHOW_RATIONALE),
+                new Permission(PERMISSIONS[2], GrantResult.GRANTED)
         );
 
         when(rxRuntimePermissions.requestPermissions(
@@ -137,8 +139,8 @@ public class RequestPermissionsSourceFactoryTest {
     public void requestPermissions_allDenied() {
         // onsinglee permission
         {
-            final List<PermissionsResult.Permission> permissions = Collections.singletonList(
-                    new PermissionsResult.Permission(PERMISSIONS[0], GrantResult.SHOULD_SHOW_RATIONALE)
+            final List<Permission> permissions = Collections.singletonList(
+                    new Permission(PERMISSIONS[0], GrantResult.SHOULD_SHOW_RATIONALE)
             );
 
             when(rxRuntimePermissions.requestPermissions(
@@ -163,10 +165,10 @@ public class RequestPermissionsSourceFactoryTest {
 
         // multiple permissions
         {
-            final List<PermissionsResult.Permission> permissions = Arrays.asList(
-                    new PermissionsResult.Permission(PERMISSIONS[0], GrantResult.SHOULD_SHOW_RATIONALE),
-                    new PermissionsResult.Permission(PERMISSIONS[1], GrantResult.SHOULD_SHOW_RATIONALE),
-                    new PermissionsResult.Permission(PERMISSIONS[2], GrantResult.SHOULD_SHOW_RATIONALE)
+            final List<Permission> permissions = Arrays.asList(
+                    new Permission(PERMISSIONS[0], GrantResult.SHOULD_SHOW_RATIONALE),
+                    new Permission(PERMISSIONS[1], GrantResult.SHOULD_SHOW_RATIONALE),
+                    new Permission(PERMISSIONS[2], GrantResult.SHOULD_SHOW_RATIONALE)
             );
 
             when(rxRuntimePermissions.requestPermissions(

@@ -8,9 +8,11 @@ import rx.Observable;
 
 public interface RequestPermissionsSource {
 
+    @NonNull
     @CheckResult
     RequestPermissionsSource on(@NonNull Observable<?> trigger);
 
+    @NonNull
     @CheckResult
     Observable<PermissionsResult> requestPermissions(int requestCode, @NonNull String... permissions);
 }

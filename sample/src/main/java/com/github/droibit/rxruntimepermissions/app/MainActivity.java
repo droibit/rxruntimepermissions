@@ -2,7 +2,6 @@ package com.github.droibit.rxruntimepermissions.app;
 
 import com.github.droibit.rxruntimepermissions.GrantResult;
 import com.github.droibit.rxruntimepermissions.PendingRequestPermissionsAction;
-import com.github.droibit.rxruntimepermissions.PermissionsResult;
 import com.github.droibit.rxruntimepermissions.RxRuntimePermissions;
 import com.github.droibit.rxruntimepermissions.Transforms;
 import com.jakewharton.rxbinding.view.RxView;
@@ -11,16 +10,16 @@ import android.Manifest;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.widget.Toast;
 
 import rx.Observable;
 import rx.functions.Action1;
+
+import static com.github.droibit.rxruntimepermissions.Transforms.areGranted;
+import static com.github.droibit.rxruntimepermissions.Transforms.toSingleGrantResult;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -41,10 +40,10 @@ public class MainActivity extends AppCompatActivity {
 
         final FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         final Observable<Void> trigger = RxView.clicks(fab);
-        rxRuntimePermissions.from(this)
+        rxRuntimePermissions.with(this)
                 .on(trigger)
                 .requestPermissions(REQUEST_CAMERA, Manifest.permission.CAMERA)
-                .map(Transforms.areGranted())
+                .map(areGranted())
                 .subscribe(new Action1<Boolean>() {
                     @Override
                     public void call(Boolean granted) {
@@ -53,9 +52,9 @@ public class MainActivity extends AppCompatActivity {
                     }
                 });
 
-        rxRuntimePermissions.from(pendingRequestPermissionsAction)
+        rxRuntimePermissions.with(pendingRequestPermissionsAction)
                 .requestPermissions(REQUEST_CALL, Manifest.permission.CALL_PHONE)
-                .map(Transforms.toSingleGrantResult())
+                .map(toSingleGrantResult())
                 .subscribe(new Action1<GrantResult>() {
                     @Override
                     public void call(GrantResult result) {

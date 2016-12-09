@@ -53,6 +53,7 @@ public class PermissionsResult {
 
     public final int requestCode;
 
+    @NonNull
     public final List<Permission> permissions;
 
     public PermissionsResult(int requestCode, @NonNull List<Permission> permissions) {

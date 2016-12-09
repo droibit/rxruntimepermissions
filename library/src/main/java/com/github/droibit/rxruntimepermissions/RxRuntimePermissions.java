@@ -1,15 +1,17 @@
 package com.github.droibit.rxruntimepermissions;
 
 
+import com.github.droibit.rxruntimepermissions.PermissionsResult.Permission;
+
 import android.app.Activity;
 import android.content.pm.PackageManager;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.annotation.VisibleForTesting;
+import android.support.v4.util.SparseArrayCompat;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import rx.Observable;
 import rx.Subscription;
@@ -21,7 +23,7 @@ import rx.subscriptions.CompositeSubscription;
 
 public class RxRuntimePermissions {
 
-    private static class TriggerSubject {
+    private static class TriggeredSubject {
 
         final boolean hasTrigger;
 
@@ -29,14 +31,14 @@ public class RxRuntimePermissions {
 
         final Func1<String, Boolean> showRationaleChecker;
 
-        TriggerSubject(boolean hasTrigger, Func1<String, Boolean> showRationaleChecker) {
+        TriggeredSubject(boolean hasTrigger, Func1<String, Boolean> showRationaleChecker) {
             this.hasTrigger = hasTrigger;
             this.subject = PublishSubject.create();
             this.showRationaleChecker = showRationaleChecker;
         }
     }
 
-    private final Map<Integer, TriggerSubject> subjects;
+    private final SparseArrayCompat<TriggeredSubject> subjects;
 
     @Nullable
     private final CompositeSubscription subscriptions;
@@ -46,36 +48,41 @@ public class RxRuntimePermissions {
     }
 
     public RxRuntimePermissions(@Nullable CompositeSubscription subscriptions) {
-        this.subjects = new HashMap<>();
+        this.subjects = new SparseArrayCompat<>();
         this.subscriptions = subscriptions;
     }
 
-    public RequestPermissionsSource from(@NonNull Activity activity) {
+    public RequestPermissionsSource with(@NonNull Activity activity) {
         return new RequestPermissionsSourceFactory.FromActivity(this, activity);
     }
 
-    public PendingRequestPermissionsSource from(@NonNull PendingRequestPermissionsAction action) {
+    public PendingRequestPermissionsSource with(@NonNull PendingRequestPermissionsAction action) {
         return new RequestPermissionsSourceFactory.FromAction(this, action);
     }
 
     public void onRequestPermissionsResult(
             int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        final TriggerSubject triggerSubject = subjects.get(requestCode);
-        if (triggerSubject == null) {
+        final TriggeredSubject triggeredSubject = subjects.get(requestCode);
+        if (triggeredSubject == null) {
             return;
         }
 
-        final PublishSubject<PermissionsResult> subject = triggerSubject.subject;
-        final PermissionsResult permissionsResult = createPermissionsResult(requestCode, permissions, grantResults,
-                triggerSubject.showRationaleChecker);
+        final PublishSubject<PermissionsResult> subject = triggeredSubject.subject;
+        final PermissionsResult permissionsResult = createPermissionsResult(
+                requestCode,
+                permissions,
+                grantResults,
+                triggeredSubject.showRationaleChecker
+        );
         subject.onNext(permissionsResult);
 
-        if (!triggerSubject.hasTrigger) {
+        if (!triggeredSubject.hasTrigger) {
             subject.onCompleted();
             subjects.remove(requestCode);
         }
     }
 
+    @VisibleForTesting
     Observable<PermissionsResult> requestPermissions(
             final Action2<Integer, String[]> requestPermissions,
             final Func1<String, Boolean> showRationaleChecker,
@@ -104,12 +111,13 @@ public class RxRuntimePermissions {
 
     private PublishSubject<PermissionsResult> createSubjectIfNotExist(int requestCode, boolean hasTrigger,
             Func1<String, Boolean> showRationaleChecker) {
-        if (!subjects.containsKey(requestCode)) {
-            final TriggerSubject triggerSubject = new TriggerSubject(hasTrigger, showRationaleChecker);
-            subjects.put(requestCode, triggerSubject);
-            return triggerSubject.subject;
+        final TriggeredSubject target = subjects.get(requestCode);
+        if (target == null) {
+            final TriggeredSubject triggeredSubject = new TriggeredSubject(hasTrigger, showRationaleChecker);
+            subjects.put(requestCode, triggeredSubject);
+            return triggeredSubject.subject;
         }
-        return subjects.get(requestCode).subject;
+        return target.subject;
     }
 
     private PermissionsResult createPermissionsResult(int requestCode, String[] permissions, int[] grantResults,
@@ -118,10 +126,10 @@ public class RxRuntimePermissions {
             throw new IllegalArgumentException("permissions.length != grantResults.length");
         }
 
-        final List<PermissionsResult.Permission> results = new ArrayList<>(permissions.length);
+        final List<Permission> results = new ArrayList<>(permissions.length);
         for (int i = 0, length = permissions.length; i < length; i++) {
             final GrantResult grantResult = convertGrantResult(permissions[i], grantResults[i], showRationaleChecker);
-            results.add(new PermissionsResult.Permission(permissions[i], grantResult));
+            results.add(new Permission(permissions[i], grantResult));
         }
         return new PermissionsResult(requestCode, results);
     }

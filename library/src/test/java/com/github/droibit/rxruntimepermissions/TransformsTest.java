@@ -1,5 +1,7 @@
 package com.github.droibit.rxruntimepermissions;
 
+import com.github.droibit.rxruntimepermissions.PermissionsResult.Permission;
+
 import org.junit.Test;
 
 import java.util.Arrays;
@@ -20,8 +22,8 @@ public class TransformsTest {
     public void areGranted_allGranted() {
         // one permission
         {
-            final List<PermissionsResult.Permission> permissions = Arrays.asList(
-                    new PermissionsResult.Permission(PERMISSIONS[0], GrantResult.GRANTED)
+            final List<Permission> permissions = Arrays.asList(
+                    new Permission(PERMISSIONS[0], GrantResult.GRANTED)
             );
 
             TestSubscriber<Boolean> testSubscriber = TestSubscriber.create();
@@ -34,10 +36,10 @@ public class TransformsTest {
 
         // multiple permission
         {
-            final List<PermissionsResult.Permission> permissions = Arrays.asList(
-                    new PermissionsResult.Permission(PERMISSIONS[0], GrantResult.GRANTED),
-                    new PermissionsResult.Permission(PERMISSIONS[1], GrantResult.GRANTED),
-                    new PermissionsResult.Permission(PERMISSIONS[2], GrantResult.GRANTED)
+            final List<Permission> permissions = Arrays.asList(
+                    new Permission(PERMISSIONS[0], GrantResult.GRANTED),
+                    new Permission(PERMISSIONS[1], GrantResult.GRANTED),
+                    new Permission(PERMISSIONS[2], GrantResult.GRANTED)
             );
 
             TestSubscriber<Boolean> testSubscriber = TestSubscriber.create();
@@ -53,8 +55,8 @@ public class TransformsTest {
     public void areGranted_containsDenied() {
         // one permission
         {
-            final List<PermissionsResult.Permission> permissions = Arrays.asList(
-                    new PermissionsResult.Permission(PERMISSIONS[0], GrantResult.SHOULD_SHOW_RATIONALE)
+            final List<Permission> permissions = Arrays.asList(
+                    new Permission(PERMISSIONS[0], GrantResult.SHOULD_SHOW_RATIONALE)
             );
 
             TestSubscriber<Boolean> testSubscriber = TestSubscriber.create();
@@ -67,10 +69,10 @@ public class TransformsTest {
 
         // multiple permission
         {
-            final List<PermissionsResult.Permission> permissions = Arrays.asList(
-                    new PermissionsResult.Permission(PERMISSIONS[0], GrantResult.GRANTED),
-                    new PermissionsResult.Permission(PERMISSIONS[1], GrantResult.SHOULD_SHOW_RATIONALE),
-                    new PermissionsResult.Permission(PERMISSIONS[2], GrantResult.NEVER_ASK_AGAIN)
+            final List<Permission> permissions = Arrays.asList(
+                    new Permission(PERMISSIONS[0], GrantResult.GRANTED),
+                    new Permission(PERMISSIONS[1], GrantResult.SHOULD_SHOW_RATIONALE),
+                    new Permission(PERMISSIONS[2], GrantResult.NEVER_ASK_AGAIN)
             );
 
             TestSubscriber<Boolean> testSubscriber = TestSubscriber.create();
@@ -86,8 +88,8 @@ public class TransformsTest {
     public void toGrantResult() {
         // one permission
         {
-            final List<PermissionsResult.Permission> permissions = Arrays.asList(
-                    new PermissionsResult.Permission(PERMISSIONS[0], GrantResult.SHOULD_SHOW_RATIONALE)
+            final List<Permission> permissions = Arrays.asList(
+                    new Permission(PERMISSIONS[0], GrantResult.SHOULD_SHOW_RATIONALE)
             );
 
             TestSubscriber<GrantResult> testSubscriber = TestSubscriber.create();
@@ -101,10 +103,10 @@ public class TransformsTest {
 
         // multiple permissions
         {
-            final List<PermissionsResult.Permission> permissions = Arrays.asList(
-                    new PermissionsResult.Permission(PERMISSIONS[0], GrantResult.GRANTED),
-                    new PermissionsResult.Permission(PERMISSIONS[1], GrantResult.SHOULD_SHOW_RATIONALE),
-                    new PermissionsResult.Permission(PERMISSIONS[2], GrantResult.NEVER_ASK_AGAIN)
+            final List<Permission> permissions = Arrays.asList(
+                    new Permission(PERMISSIONS[0], GrantResult.GRANTED),
+                    new Permission(PERMISSIONS[1], GrantResult.SHOULD_SHOW_RATIONALE),
+                    new Permission(PERMISSIONS[2], GrantResult.NEVER_ASK_AGAIN)
             );
 
             TestSubscriber<GrantResult> testSubscriber = TestSubscriber.create();
