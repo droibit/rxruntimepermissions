@@ -27,8 +27,7 @@ android {
 }
 
 dependencies {
-    compile "com.android.support:support-compat:$supportLibraryVersion"
-    compile "com.android.support:support-core-utils:$supportLibraryVersion"
+    compile "com.android.support:support-v4:$supportLibraryVersion"
 
     compile "io.reactivex:rxjava:$rxJavaVersion"
 
