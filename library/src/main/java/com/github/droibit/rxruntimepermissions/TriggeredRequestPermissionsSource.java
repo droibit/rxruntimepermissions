@@ -1,12 +1,14 @@
 package com.github.droibit.rxruntimepermissions;
 
+
 import android.support.annotation.CheckResult;
 import android.support.annotation.NonNull;
 
 import rx.Observable;
 
-public interface PendingRequestPermissionsSource {
+public interface TriggeredRequestPermissionsSource extends RequestPermissionsSource {
 
+    @NonNull
     @CheckResult
-    Observable<PermissionsResult> requestPermissions(int requestCode, @NonNull String... permissions);
+    TriggeredRequestPermissionsSource on(@NonNull Observable<?> trigger);
 }

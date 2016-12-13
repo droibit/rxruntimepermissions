@@ -17,7 +17,7 @@ class RequestPermissionsSourceFactory {
     private RequestPermissionsSourceFactory() {
     }
 
-    static class SourceActivity implements RequestPermissionsSource, Action2<Integer, String[]>, Func1<String, Boolean> {
+    static class SourceActivity implements TriggeredRequestPermissionsSource, Action2<String[], Integer>, Func1<String, Boolean> {
 
         private final RxRuntimePermissions rxRuntimePermissions;
 
@@ -33,7 +33,7 @@ class RequestPermissionsSourceFactory {
 
         @NonNull
         @Override
-        public RequestPermissionsSource on(@NonNull Observable<?> trigger) {
+        public TriggeredRequestPermissionsSource on(@NonNull Observable<?> trigger) {
             this.trigger = checkNotNull(trigger);
             return this;
         }
@@ -51,7 +51,7 @@ class RequestPermissionsSourceFactory {
         }
 
         @Override
-        public void call(@NonNull Integer requestCode, @NonNull String[] permissions) {
+        public void call(@NonNull String[] permissions, @NonNull Integer requestCode) {
             ActivityCompat.requestPermissions(activity, permissions, requestCode);
         }
 
@@ -62,7 +62,7 @@ class RequestPermissionsSourceFactory {
     }
 
     @TargetApi(Build.VERSION_CODES.M)
-    static class SourceFragment implements RequestPermissionsSource, Action2<Integer, String[]>, Func1<String, Boolean> {
+    static class SourceFragment implements TriggeredRequestPermissionsSource, Action2<String[], Integer>, Func1<String, Boolean> {
 
         private final RxRuntimePermissions rxRuntimePermissions;
 
@@ -71,14 +71,14 @@ class RequestPermissionsSourceFactory {
         @Nullable
         private Observable<?> trigger;
 
-        public SourceFragment(RxRuntimePermissions rxRuntimePermissions, Fragment fragment) {
+        SourceFragment(RxRuntimePermissions rxRuntimePermissions, Fragment fragment) {
             this.rxRuntimePermissions = rxRuntimePermissions;
             this.fragment = checkNotNull(fragment);
         }
 
         @NonNull
         @Override
-        public RequestPermissionsSource on(@NonNull Observable<?> trigger) {
+        public TriggeredRequestPermissionsSource on(@NonNull Observable<?> trigger) {
             this.trigger = checkNotNull(trigger);
             return this;
         }
@@ -96,7 +96,7 @@ class RequestPermissionsSourceFactory {
         }
 
         @Override
-        public void call(@NonNull Integer requestCode, @NonNull String[] permissions) {
+        public void call(@NonNull String[] permissions, @NonNull Integer requestCode) {
             fragment.requestPermissions(permissions, requestCode);
         }
 
@@ -106,7 +106,7 @@ class RequestPermissionsSourceFactory {
         }
     }
 
-    static class SourceSupportFragment implements RequestPermissionsSource, Action2<Integer, String[]>, Func1<String, Boolean> {
+    static class SourceSupportFragment implements TriggeredRequestPermissionsSource, Action2<String[], Integer>, Func1<String, Boolean> {
 
         private final RxRuntimePermissions rxRuntimePermissions;
 
@@ -115,14 +115,14 @@ class RequestPermissionsSourceFactory {
         @Nullable
         private Observable<?> trigger;
 
-        public SourceSupportFragment(RxRuntimePermissions rxRuntimePermissions, android.support.v4.app.Fragment fragment) {
+        SourceSupportFragment(RxRuntimePermissions rxRuntimePermissions, android.support.v4.app.Fragment fragment) {
             this.rxRuntimePermissions = rxRuntimePermissions;
             this.fragment = checkNotNull(fragment);
         }
 
         @NonNull
         @Override
-        public RequestPermissionsSource on(@NonNull Observable<?> trigger) {
+        public TriggeredRequestPermissionsSource on(@NonNull Observable<?> trigger) {
             this.trigger = checkNotNull(trigger);
             return this;
         }
@@ -140,7 +140,7 @@ class RequestPermissionsSourceFactory {
         }
 
         @Override
-        public void call(@NonNull Integer requestCode, @NonNull String[] permissions) {
+        public void call(@NonNull String[] permissions, @NonNull Integer requestCode) {
             fragment.requestPermissions(permissions, requestCode);
         }
 
@@ -150,7 +150,7 @@ class RequestPermissionsSourceFactory {
         }
     }
 
-    static class SourceAction implements PendingRequestPermissionsSource {
+    static class SourceAction implements RequestPermissionsSource, Action2<String[], Integer>, Func1<String, Boolean> {
 
         private final RxRuntimePermissions rxRuntimePermissions;
 
@@ -171,6 +171,16 @@ class RequestPermissionsSourceFactory {
                             requestCode,
                             checkNotNull(permissions)
                     );
+        }
+
+        @Override
+        public void call(@NonNull String[] permissions, @NonNull Integer requestCode) {
+            action.requestPermissions.call(permissions, requestCode);
+        }
+
+        @Override
+        public Boolean call(@NonNull String permission) {
+            return action.showRationaleChecker.call(permission);
         }
     }
 

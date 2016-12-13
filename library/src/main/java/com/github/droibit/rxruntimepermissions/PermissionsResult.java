@@ -8,8 +8,10 @@ public class PermissionsResult {
 
     public static class Permission {
 
+        @NonNull
         public final String name;
 
+        @NonNull
         public final GrantResult grantResult;
 
         public Permission(@NonNull String name, @NonNull GrantResult grantResult) {

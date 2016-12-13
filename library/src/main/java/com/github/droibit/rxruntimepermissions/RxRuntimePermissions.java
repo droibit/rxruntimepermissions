@@ -3,9 +3,11 @@ package com.github.droibit.rxruntimepermissions;
 
 import com.github.droibit.rxruntimepermissions.PermissionsResult.Permission;
 
+import android.annotation.TargetApi;
 import android.app.Activity;
 import android.app.Fragment;
 import android.content.pm.PackageManager;
+import android.os.Build;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.VisibleForTesting;
@@ -53,19 +55,20 @@ public class RxRuntimePermissions {
         this.subscriptions = subscriptions;
     }
 
-    public RequestPermissionsSource with(@NonNull Activity activity) {
+    public TriggeredRequestPermissionsSource with(@NonNull Activity activity) {
         return new RequestPermissionsSourceFactory.SourceActivity(this, activity);
     }
 
-    public RequestPermissionsSource with(@NonNull Fragment fragment) {
+    @TargetApi(Build.VERSION_CODES.M)
+    public TriggeredRequestPermissionsSource with(@NonNull Fragment fragment) {
         return new RequestPermissionsSourceFactory.SourceFragment(this, fragment);
     }
 
-    public RequestPermissionsSource with(@NonNull android.support.v4.app.Fragment fragment) {
+    public TriggeredRequestPermissionsSource with(@NonNull android.support.v4.app.Fragment fragment) {
         return new RequestPermissionsSourceFactory.SourceSupportFragment(this, fragment);
     }
 
-    public PendingRequestPermissionsSource with(@NonNull PendingRequestPermissionsAction action) {
+    public RequestPermissionsSource with(@NonNull PendingRequestPermissionsAction action) {
         return new RequestPermissionsSourceFactory.SourceAction(this, action);
     }
 
@@ -93,7 +96,7 @@ public class RxRuntimePermissions {
 
     @VisibleForTesting
     Observable<PermissionsResult> requestPermissions(
-            final Action2<Integer, String[]> requestPermissions,
+            final Action2<String[], Integer> requestPermissions,
             final Func1<String, Boolean> showRationaleChecker,
             @Nullable Observable<?> trigger,
             final int requestCode,
@@ -108,7 +111,7 @@ public class RxRuntimePermissions {
         final Subscription subscription = observable.subscribe(new Action1<Object>() {
             @Override
             public void call(Object ignored) {
-                requestPermissions.call(requestCode, permissions);
+                requestPermissions.call(permissions, requestCode);
             }
         });
 

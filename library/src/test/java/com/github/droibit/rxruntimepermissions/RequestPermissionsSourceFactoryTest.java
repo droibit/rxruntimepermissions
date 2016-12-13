@@ -56,7 +56,7 @@ public class RequestPermissionsSourceFactoryTest {
             );
 
             when(rxRuntimePermissions.requestPermissions(
-                    (Action2<Integer, String[]>) any(),
+                    (Action2<String[], Integer>) any(),
                     (Func1<String, Boolean>) any(),
                     (Observable<?>) any(),
                     anyInt(),
@@ -84,7 +84,7 @@ public class RequestPermissionsSourceFactoryTest {
             );
 
             when(rxRuntimePermissions.requestPermissions(
-                    (Action2<Integer, String[]>) any(),
+                    (Action2<String[], Integer>) any(),
                     (Func1<String, Boolean>) any(),
                     (Observable<?>) any(),
                     anyInt(),
@@ -114,7 +114,7 @@ public class RequestPermissionsSourceFactoryTest {
         );
 
         when(rxRuntimePermissions.requestPermissions(
-                (Action2<Integer, String[]>) any(),
+                (Action2<String[], Integer>) any(),
                 (Func1<String, Boolean>) any(),
                 (Observable<?>) any(),
                 anyInt(),
@@ -143,7 +143,7 @@ public class RequestPermissionsSourceFactoryTest {
             );
 
             when(rxRuntimePermissions.requestPermissions(
-                    (Action2<Integer, String[]>) any(),
+                    (Action2<String[], Integer>) any(),
                     (Func1<String, Boolean>) any(),
                     (Observable<?>) any(),
                     anyInt(),
@@ -171,7 +171,7 @@ public class RequestPermissionsSourceFactoryTest {
             );
 
             when(rxRuntimePermissions.requestPermissions(
-                    (Action2<Integer, String[]>) any(),
+                    (Action2<String[], Integer>) any(),
                     (Func1<String, Boolean>) any(),
                     (Observable<?>) any(),
                     anyInt(),

@@ -34,7 +34,7 @@ public class RxRuntimePermissionsTest {
     private static final String[] MULTIPLE_PERMISSIONS = {"test-1", "test-2", "test-3"};
 
     @Mock
-    Action2<Integer, String[]> requestPermissions;
+    Action2<String[], Integer> requestPermissions;
 
     @Mock
     Func1<String, Boolean> showRationaleChecker;
