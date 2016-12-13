@@ -4,6 +4,7 @@ package com.github.droibit.rxruntimepermissions;
 import com.github.droibit.rxruntimepermissions.PermissionsResult.Permission;
 
 import android.app.Activity;
+import android.app.Fragment;
 import android.content.pm.PackageManager;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -53,11 +54,19 @@ public class RxRuntimePermissions {
     }
 
     public RequestPermissionsSource with(@NonNull Activity activity) {
-        return new RequestPermissionsSourceFactory.FromActivity(this, activity);
+        return new RequestPermissionsSourceFactory.SourceActivity(this, activity);
+    }
+
+    public RequestPermissionsSource with(@NonNull Fragment fragment) {
+        return new RequestPermissionsSourceFactory.SourceFragment(this, fragment);
+    }
+
+    public RequestPermissionsSource with(@NonNull android.support.v4.app.Fragment fragment) {
+        return new RequestPermissionsSourceFactory.SourceSupportFragment(this, fragment);
     }
 
     public PendingRequestPermissionsSource with(@NonNull PendingRequestPermissionsAction action) {
-        return new RequestPermissionsSourceFactory.FromAction(this, action);
+        return new RequestPermissionsSourceFactory.SourceAction(this, action);
     }
 
     public void onRequestPermissionsResult(

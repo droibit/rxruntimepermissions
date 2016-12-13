@@ -37,13 +37,13 @@ public class RequestPermissionsSourceFactoryTest {
     @Mock
     Activity activity;
 
-    private RequestPermissionsSourceFactory.FromActivity requestPermissionsSource;
+    private RequestPermissionsSourceFactory.SourceActivity requestPermissionsSource;
 
     @Before
     public void setup() {
         MockitoAnnotations.initMocks(this);
 
-        requestPermissionsSource = new RequestPermissionsSourceFactory.FromActivity(rxRuntimePermissions, activity);
+        requestPermissionsSource = new RequestPermissionsSourceFactory.SourceActivity(rxRuntimePermissions, activity);
     }
 
     @SuppressWarnings("unchecked")

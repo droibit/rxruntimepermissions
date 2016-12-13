@@ -3,7 +3,6 @@ package com.github.droibit.rxruntimepermissions.app;
 import com.github.droibit.rxruntimepermissions.GrantResult;
 import com.github.droibit.rxruntimepermissions.PendingRequestPermissionsAction;
 import com.github.droibit.rxruntimepermissions.RxRuntimePermissions;
-import com.github.droibit.rxruntimepermissions.Transforms;
 import com.jakewharton.rxbinding.view.RxView;
 
 import android.Manifest;
@@ -24,11 +23,13 @@ import static com.github.droibit.rxruntimepermissions.Transforms.toSingleGrantRe
 public class MainActivity extends AppCompatActivity {
 
     private static final int REQUEST_CAMERA = 1;
+
     private static final int REQUEST_CALL = 2;
 
     private final RxRuntimePermissions rxRuntimePermissions = new RxRuntimePermissions();
 
-    private final PendingRequestPermissionsAction pendingRequestPermissionsAction = new PendingRequestPermissionsAction(this);
+    private final PendingRequestPermissionsAction pendingRequestPermissionsAction = PendingRequestPermissionsAction
+            .create(this);
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
