@@ -1,7 +1,7 @@
 package com.github.droibit.rxruntimepermissions.app;
 
-import com.github.droibit.rxruntimepermissions.GrantResult;
 import com.github.droibit.rxruntimepermissions.PendingRequestPermissionsAction;
+import com.github.droibit.rxruntimepermissions.PermissionsResult;
 import com.github.droibit.rxruntimepermissions.RxRuntimePermissions;
 import com.jakewharton.rxbinding.view.RxView;
 
@@ -56,9 +56,9 @@ public class MainActivity extends AppCompatActivity {
         rxRuntimePermissions.with(pendingRequestPermissionsAction)
                 .requestPermissions(REQUEST_CALL, Manifest.permission.CALL_PHONE)
                 .map(toSingleGrantResult())
-                .subscribe(new Action1<GrantResult>() {
+                .subscribe(new Action1<PermissionsResult.GrantResult>() {
                     @Override
-                    public void call(GrantResult result) {
+                    public void call(PermissionsResult.GrantResult result) {
                         Toast.makeText(MainActivity.this, "Phone Permission: " + result.toString(), Toast.LENGTH_SHORT).show();
                     }
                 });

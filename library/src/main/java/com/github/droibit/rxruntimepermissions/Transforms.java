@@ -27,16 +27,16 @@ public final class Transforms {
         }
     }
 
-    public static Func1<PermissionsResult, GrantResult> toSingleGrantResult() {
+    public static Func1<PermissionsResult, PermissionsResult.GrantResult> toSingleGrantResult() {
         return TO_SINGLE_GRANT_RESULT;
     }
 
-    private static final Func1<PermissionsResult, GrantResult> TO_SINGLE_GRANT_RESULT = new ToSingleGrantResult();
+    private static final Func1<PermissionsResult, PermissionsResult.GrantResult> TO_SINGLE_GRANT_RESULT = new ToSingleGrantResult();
 
-    private static class ToSingleGrantResult implements Func1<PermissionsResult, GrantResult> {
+    private static class ToSingleGrantResult implements Func1<PermissionsResult, PermissionsResult.GrantResult> {
 
         @Override
-        public GrantResult call(PermissionsResult permissionsResult) {
+        public PermissionsResult.GrantResult call(PermissionsResult permissionsResult) {
             return Observable.from(permissionsResult.permissions).toBlocking().single().grantResult;
         }
     }

@@ -140,16 +140,16 @@ public class RxRuntimePermissions {
 
         final List<Permission> results = new ArrayList<>(permissions.length);
         for (int i = 0, length = permissions.length; i < length; i++) {
-            final GrantResult grantResult = convertGrantResult(permissions[i], grantResults[i], showRationaleChecker);
+            final PermissionsResult.GrantResult grantResult = convertGrantResult(permissions[i], grantResults[i], showRationaleChecker);
             results.add(new Permission(permissions[i], grantResult));
         }
         return new PermissionsResult(requestCode, results);
     }
 
-    private GrantResult convertGrantResult(String permission, int result, Func1<String, Boolean> showRationaleChecker) {
+    private PermissionsResult.GrantResult convertGrantResult(String permission, int result, Func1<String, Boolean> showRationaleChecker) {
         if (result == PackageManager.PERMISSION_GRANTED) {
-            return GrantResult.GRANTED;
+            return PermissionsResult.GrantResult.GRANTED;
         }
-        return showRationaleChecker.call(permission) ? GrantResult.SHOULD_SHOW_RATIONALE : GrantResult.NEVER_ASK_AGAIN;
+        return showRationaleChecker.call(permission) ? PermissionsResult.GrantResult.SHOULD_SHOW_RATIONALE : PermissionsResult.GrantResult.NEVER_ASK_AGAIN;
     }
 }

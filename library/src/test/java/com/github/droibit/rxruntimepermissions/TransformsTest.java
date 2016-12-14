@@ -1,5 +1,6 @@
 package com.github.droibit.rxruntimepermissions;
 
+import com.github.droibit.rxruntimepermissions.PermissionsResult.GrantResult;
 import com.github.droibit.rxruntimepermissions.PermissionsResult.Permission;
 
 import org.junit.Test;

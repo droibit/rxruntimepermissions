@@ -6,6 +6,12 @@ import java.util.List;
 
 public class PermissionsResult {
 
+    public enum GrantResult {
+        GRANTED,
+        SHOULD_SHOW_RATIONALE,
+        NEVER_ASK_AGAIN
+    }
+
     public static class Permission {
 
         @NonNull
