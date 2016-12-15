@@ -5,7 +5,7 @@ import android.support.annotation.NonNull;
 
 import rx.Observable;
 
-public interface RequestPermissionsSource {
+public interface PermissionsRequest {
 
     @CheckResult
     Observable<PermissionsResult> requestPermissions(int requestCode, @NonNull String... permissions);

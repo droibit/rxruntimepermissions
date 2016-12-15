@@ -26,7 +26,7 @@ import static org.mockito.Matchers.anyInt;
 import static org.mockito.Mockito.*;
 
 
-public class RequestPermissionsSourceFactoryTest {
+public class PermissionsRequestFactoryTest {
 
     private static final int REQUEST_CODE = 1;
 
@@ -38,13 +38,13 @@ public class RequestPermissionsSourceFactoryTest {
     @Mock
     Activity activity;
 
-    private RequestPermissionsSourceFactory.SourceActivity requestPermissionsSource;
+    private PermissionsRequestFactory.SourceActivity requestPermissionsSource;
 
     @Before
     public void setup() {
         MockitoAnnotations.initMocks(this);
 
-        requestPermissionsSource = new RequestPermissionsSourceFactory.SourceActivity(rxRuntimePermissions, activity);
+        requestPermissionsSource = new PermissionsRequestFactory.SourceActivity(rxRuntimePermissions, activity);
     }
 
     @SuppressWarnings("unchecked")

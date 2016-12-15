@@ -6,9 +6,9 @@ import android.support.annotation.NonNull;
 
 import rx.Observable;
 
-public interface TriggeredRequestPermissionsSource extends RequestPermissionsSource {
+public interface TriggeredPermissionsRequest extends PermissionsRequest {
 
     @NonNull
     @CheckResult
-    TriggeredRequestPermissionsSource on(@NonNull Observable<?> trigger);
+    PermissionsRequest on(@NonNull Observable<?> trigger);
 }

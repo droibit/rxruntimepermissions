@@ -55,21 +55,21 @@ public class RxRuntimePermissions {
         this.subscriptions = subscriptions;
     }
 
-    public TriggeredRequestPermissionsSource with(@NonNull Activity activity) {
-        return new RequestPermissionsSourceFactory.SourceActivity(this, activity);
+    public TriggeredPermissionsRequest with(@NonNull Activity activity) {
+        return new PermissionsRequestFactory.SourceActivity(this, activity);
     }
 
     @TargetApi(Build.VERSION_CODES.M)
-    public TriggeredRequestPermissionsSource with(@NonNull Fragment fragment) {
-        return new RequestPermissionsSourceFactory.SourceFragment(this, fragment);
+    public TriggeredPermissionsRequest with(@NonNull Fragment fragment) {
+        return new PermissionsRequestFactory.SourceFragment(this, fragment);
     }
 
-    public TriggeredRequestPermissionsSource with(@NonNull android.support.v4.app.Fragment fragment) {
-        return new RequestPermissionsSourceFactory.SourceSupportFragment(this, fragment);
+    public TriggeredPermissionsRequest with(@NonNull android.support.v4.app.Fragment fragment) {
+        return new PermissionsRequestFactory.SourceSupportFragment(this, fragment);
     }
 
-    public RequestPermissionsSource with(@NonNull PendingRequestPermissionsAction action) {
-        return new RequestPermissionsSourceFactory.SourceAction(this, action);
+    public PermissionsRequest with(@NonNull PendingRequestPermissionsAction action) {
+        return new PermissionsRequestFactory.SourceAction(this, action);
     }
 
     public void onRequestPermissionsResult(

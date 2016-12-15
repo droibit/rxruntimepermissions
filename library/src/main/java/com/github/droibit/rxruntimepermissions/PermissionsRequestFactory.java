@@ -12,12 +12,12 @@ import rx.Observable;
 import rx.functions.Action2;
 import rx.functions.Func1;
 
-class RequestPermissionsSourceFactory {
+class PermissionsRequestFactory {
 
-    private RequestPermissionsSourceFactory() {
+    private PermissionsRequestFactory() {
     }
 
-    static class SourceActivity implements TriggeredRequestPermissionsSource, Action2<String[], Integer>, Func1<String, Boolean> {
+    static class SourceActivity implements TriggeredPermissionsRequest, Action2<String[], Integer>, Func1<String, Boolean> {
 
         private final RxRuntimePermissions rxRuntimePermissions;
 
@@ -33,7 +33,7 @@ class RequestPermissionsSourceFactory {
 
         @NonNull
         @Override
-        public TriggeredRequestPermissionsSource on(@NonNull Observable<?> trigger) {
+        public PermissionsRequest on(@NonNull Observable<?> trigger) {
             this.trigger = checkNotNull(trigger);
             return this;
         }
@@ -62,7 +62,7 @@ class RequestPermissionsSourceFactory {
     }
 
     @TargetApi(Build.VERSION_CODES.M)
-    static class SourceFragment implements TriggeredRequestPermissionsSource, Action2<String[], Integer>, Func1<String, Boolean> {
+    static class SourceFragment implements TriggeredPermissionsRequest, Action2<String[], Integer>, Func1<String, Boolean> {
 
         private final RxRuntimePermissions rxRuntimePermissions;
 
@@ -78,7 +78,7 @@ class RequestPermissionsSourceFactory {
 
         @NonNull
         @Override
-        public TriggeredRequestPermissionsSource on(@NonNull Observable<?> trigger) {
+        public PermissionsRequest on(@NonNull Observable<?> trigger) {
             this.trigger = checkNotNull(trigger);
             return this;
         }
@@ -106,7 +106,7 @@ class RequestPermissionsSourceFactory {
         }
     }
 
-    static class SourceSupportFragment implements TriggeredRequestPermissionsSource, Action2<String[], Integer>, Func1<String, Boolean> {
+    static class SourceSupportFragment implements TriggeredPermissionsRequest, Action2<String[], Integer>, Func1<String, Boolean> {
 
         private final RxRuntimePermissions rxRuntimePermissions;
 
@@ -122,7 +122,7 @@ class RequestPermissionsSourceFactory {
 
         @NonNull
         @Override
-        public TriggeredRequestPermissionsSource on(@NonNull Observable<?> trigger) {
+        public PermissionsRequest on(@NonNull Observable<?> trigger) {
             this.trigger = checkNotNull(trigger);
             return this;
         }
@@ -150,7 +150,7 @@ class RequestPermissionsSourceFactory {
         }
     }
 
-    static class SourceAction implements RequestPermissionsSource, Action2<String[], Integer>, Func1<String, Boolean> {
+    static class SourceAction implements PermissionsRequest, Action2<String[], Integer>, Func1<String, Boolean> {
 
         private final RxRuntimePermissions rxRuntimePermissions;
 
