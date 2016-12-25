@@ -2,7 +2,8 @@ apply plugin: 'com.android.application'
 
 buildscript {
     ext {
-        rxBindingVersion = '0.4.0'
+        rxBindingVersion = '1.0.0'
+        rxjava2InteropVersion = '0.8.1'
     }
 }
 
@@ -36,4 +37,5 @@ dependencies {
     compile "com.android.support:design:$supportLibraryVersion"
 
     compile "com.jakewharton.rxbinding:rxbinding:$rxBindingVersion"
+    compile "com.github.akarnokd:rxjava2-interop:$rxjava2InteropVersion"
 }
