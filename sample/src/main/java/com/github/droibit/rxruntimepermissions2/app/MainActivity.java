@@ -1,8 +1,8 @@
-package com.github.droibit.rxruntimepermissions.app;
+package com.github.droibit.rxruntimepermissions2.app;
 
-import com.github.droibit.rxruntimepermissions.PendingRequestPermissionsAction;
-import com.github.droibit.rxruntimepermissions.PermissionsResult;
-import com.github.droibit.rxruntimepermissions.RxRuntimePermissions;
+import com.github.droibit.rxruntimepermissions2.PendingRequestPermissionsAction;
+import com.github.droibit.rxruntimepermissions2.PermissionsResult.GrantResult;
+import com.github.droibit.rxruntimepermissions2.RxRuntimePermissions;
 import com.jakewharton.rxbinding.view.RxView;
 
 import android.Manifest;
@@ -14,11 +14,9 @@ import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.widget.Toast;
 
-import rx.Observable;
-import rx.functions.Action1;
-
-import static com.github.droibit.rxruntimepermissions.Transforms.areGranted;
-import static com.github.droibit.rxruntimepermissions.Transforms.toSingleGrantResult;
+import hu.akarnokd.rxjava.interop.RxJavaInterop;
+import io.reactivex.functions.Consumer;
+import rx.functions.Func1;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -26,10 +24,9 @@ public class MainActivity extends AppCompatActivity {
 
     private static final int REQUEST_CALL = 2;
 
-    private final RxRuntimePermissions rxRuntimePermissions = new RxRuntimePermissions();
+    private final RxRuntimePermissions rxRuntimePermissions = new RxRuntimePermissions(this);
 
-    private final PendingRequestPermissionsAction pendingRequestPermissionsAction = PendingRequestPermissionsAction
-            .create(this);
+    private final PendingRequestPermissionsAction pendingRequestPermissions = new PendingRequestPermissionsAction();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,25 +37,28 @@ public class MainActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
 
         final FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        final Observable<Void> trigger = RxView.clicks(fab);
-        rxRuntimePermissions.with(this)
-                .on(trigger)
-                .requestPermissions(REQUEST_CAMERA, Manifest.permission.CAMERA)
-                .map(areGranted())
-                .subscribe(new Action1<Boolean>() {
+        RxJavaInterop.toV2Observable(RxView.clicks(fab).map(new Func1<Void, Object>() {
                     @Override
-                    public void call(Boolean granted) {
+                    public Object call(Void aVoid) {
+                        return new Object();
+                    }
+                }))
+                .compose(rxRuntimePermissions.thenRequest(REQUEST_CAMERA, Manifest.permission.CAMERA))
+                .map(RxRuntimePermissions.areGranted())
+                .subscribe(new Consumer<Boolean>() {
+                    @Override
+                    public void accept(Boolean granted) throws Exception {
                         final String msg = granted ? "Granted" : "Denied";
                         Toast.makeText(MainActivity.this, "Camera Permission: " + msg, Toast.LENGTH_SHORT).show();
                     }
                 });
 
-        rxRuntimePermissions.with(pendingRequestPermissionsAction)
-                .requestPermissions(REQUEST_CALL, Manifest.permission.CALL_PHONE)
-                .map(toSingleGrantResult())
-                .subscribe(new Action1<PermissionsResult.GrantResult>() {
+        pendingRequestPermissions.asObservable()
+                .compose(rxRuntimePermissions.thenRequest(REQUEST_CALL, Manifest.permission.CALL_PHONE))
+                .map(RxRuntimePermissions.toFirstGrantResult())
+                .subscribe(new Consumer<GrantResult>() {
                     @Override
-                    public void call(PermissionsResult.GrantResult result) {
+                    public void accept(GrantResult result) throws Exception {
                         Toast.makeText(MainActivity.this, "Phone Permission: " + result.toString(), Toast.LENGTH_SHORT).show();
                     }
                 });
@@ -72,6 +72,6 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void onClickCall(View v) {
-        pendingRequestPermissionsAction.call();
+        pendingRequestPermissions.call();
     }
 }
