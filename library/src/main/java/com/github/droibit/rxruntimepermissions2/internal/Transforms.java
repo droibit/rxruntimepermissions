@@ -11,7 +11,9 @@ import io.reactivex.Observable;
 import io.reactivex.functions.Function;
 import io.reactivex.functions.Predicate;
 
-@RestrictTo(RestrictTo.Scope.LIBRARY)
+import static android.support.annotation.RestrictTo.Scope.LIBRARY;
+
+@RestrictTo(LIBRARY)
 public final class Transforms {
 
     private Transforms() {
