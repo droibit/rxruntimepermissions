@@ -4,11 +4,14 @@ import com.github.droibit.rxruntimepermissions2.RxRuntimePermissions.Permissions
 
 import android.app.Activity;
 import android.support.annotation.NonNull;
+import android.support.annotation.RestrictTo;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 
+import static android.support.annotation.RestrictTo.Scope.LIBRARY;
 import static io.reactivex.internal.functions.ObjectHelper.requireNonNull;
 
+@RestrictTo(LIBRARY)
 final class PermissionsRequestFactory {
 
     @NonNull

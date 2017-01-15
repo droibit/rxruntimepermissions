@@ -4,6 +4,9 @@ import android.support.annotation.NonNull;
 
 import java.util.List;
 
+/**
+ * This class holds the result of {@link RxRuntimePermissions#onRequestPermissionsResult(int, String[], int[])}.
+ */
 public class PermissionsResult {
 
     public enum GrantResult {
@@ -12,6 +15,9 @@ public class PermissionsResult {
         NEVER_ASK_AGAIN
     }
 
+    /**
+     * Granted result for each permission.
+     */
     public static class Permission {
 
         @NonNull
@@ -80,10 +86,7 @@ public class PermissionsResult {
 
         PermissionsResult that = (PermissionsResult) o;
 
-        if (requestCode != that.requestCode) {
-            return false;
-        }
-        return permissions.equals(that.permissions);
+        return requestCode == that.requestCode && permissions.equals(that.permissions);
 
     }
 

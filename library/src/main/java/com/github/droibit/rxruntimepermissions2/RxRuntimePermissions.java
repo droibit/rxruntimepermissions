@@ -10,6 +10,7 @@ import android.app.Activity;
 import android.content.pm.PackageManager;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.annotation.RestrictTo;
 import android.support.annotation.VisibleForTesting;
 import android.support.v4.app.Fragment;
 import android.support.v4.util.SparseArrayCompat;
@@ -25,8 +26,17 @@ import io.reactivex.functions.Consumer;
 import io.reactivex.functions.Function;
 import io.reactivex.subjects.PublishSubject;
 
+import static android.support.annotation.RestrictTo.Scope.LIBRARY;
+
+/**
+ * Provide a way to receive the result of Runtime Permission request using RxJava.<br/>
+ *
+ * When the Activity(Fragment) receives the result of the request,
+ * you <b>must</b> call {@link #onRequestPermissionsResult(int, String[], int[])}.
+ */
 public class RxRuntimePermissions {
 
+    @RestrictTo(LIBRARY)
     interface PermissionsRequest extends BiConsumer<String[], Integer>, Function<String, Boolean> {
 
     }
@@ -43,10 +53,18 @@ public class RxRuntimePermissions {
         }
     }
 
+    /**
+     * Transform from {@link PermissionsResult} list to {@link Boolean}.<br/>
+     * Returns {@code true} if all permissions are granted.
+     */
     public static Function<PermissionsResult, Boolean> areGranted() {
         return Transforms.ARE_GRANTED;
     }
 
+    /**
+     * Transform from {@link PermissionsResult} list to single {@link GrantResult}.<br/>
+     * Utility for a single permission grant request.
+     */
     public static Function<PermissionsResult, GrantResult> toFirstGrantResult() {
         return Transforms.TO_FIRST_GRANT_RESULT;
     }
@@ -70,6 +88,33 @@ public class RxRuntimePermissions {
         this.subjects = new SparseArrayCompat<>();
     }
 
+    /**
+     * Requests permissions to be granted to this application.
+     */
+    @NonNull
+    public Observable<PermissionsResult> request(int requestCode, @NonNull String... permissions) {
+        return request(null, permissionChecker, requestCode, permissions);
+    }
+
+    /**
+     * Requests permissions to be granted to this application.<br/>
+     * Use {@link Observable#compose(ObservableTransformer)} of {@link Observable} as trigger in combination.
+     */
+    @NonNull
+    public <T> ObservableTransformer<T, PermissionsResult> thenRequest(final int requestCode,
+            @NonNull final String... permissions) {
+        return new ObservableTransformer<T, PermissionsResult>() {
+            @Override
+            public ObservableSource<PermissionsResult> apply(Observable<T> trigger) {
+                return request(trigger, permissionChecker, requestCode, permissions);
+            }
+        };
+    }
+
+    /**
+     * @see Activity#onRequestPermissionsResult(int, String[], int[])
+     * @see Fragment#onRequestPermissionsResult(int, String[], int[])
+     */
     public void onRequestPermissionsResult(
             int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
 
@@ -88,20 +133,25 @@ public class RxRuntimePermissions {
         }
     }
 
-    @NonNull
-    public Observable<PermissionsResult> request(int requestCode, @NonNull String... permissions) {
-        return request(null, permissionChecker, requestCode, permissions);
-    }
+    private Observable<PermissionsResult> request(
+            @Nullable Observable<?> trigger,
+            final BiConsumer<String[], Integer> requestPermissions,
+            final int requestCode,
+            final String[] permissions) {
 
-    @NonNull
-    public <T> ObservableTransformer<T, PermissionsResult> thenRequest(final int requestCode,
-            @NonNull final String... permissions) {
-        return new ObservableTransformer<T, PermissionsResult>() {
+        if (permissions.length == 0) {
+            throw new IllegalArgumentException("permissions must not be null.");
+        }
+
+        final boolean hasTrigger = trigger != null;
+        final Observable<?> requestTrigger = hasTrigger ? trigger : Observable.just(Notification.INSTANCE);
+        requestTrigger.subscribe(new Consumer<Object>() {
             @Override
-            public ObservableSource<PermissionsResult> apply(Observable<T> trigger) {
-                return request(trigger, permissionChecker, requestCode, permissions);
+            public void accept(Object ignored) throws Exception {
+                requestPermissions.accept(permissions, requestCode);
             }
-        };
+        });
+        return createSubjectIfNotExist(requestCode, hasTrigger);
     }
 
     @VisibleForTesting
@@ -129,27 +179,6 @@ public class RxRuntimePermissions {
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
-    }
-
-    private Observable<PermissionsResult> request(
-            @Nullable Observable<?> trigger,
-            final BiConsumer<String[], Integer> requestPermissions,
-            final int requestCode,
-            final String[] permissions) {
-
-        if (permissions.length == 0) {
-            throw new IllegalArgumentException("permissions must not be null.");
-        }
-
-        final boolean hasTrigger = trigger != null;
-        final Observable<?> requestTrigger = hasTrigger ? trigger : Observable.just(Notification.INSTANCE);
-        requestTrigger.subscribe(new Consumer<Object>() {
-            @Override
-            public void accept(Object ignored) throws Exception {
-                requestPermissions.accept(permissions, requestCode);
-            }
-        });
-        return createSubjectIfNotExist(requestCode, hasTrigger);
     }
 
     private PublishSubject<PermissionsResult> createSubjectIfNotExist(int requestCode, boolean hasTrigger) {
